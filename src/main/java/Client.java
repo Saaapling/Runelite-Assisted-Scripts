@@ -31,4 +31,12 @@ public class Client {
         return dimensions;
     }
 
+    public void show(){
+        set_window(User32.SW_SHOWMINIMIZED);
+        set_window(User32.SW_RESTORE);
+    }
+
+    public void update_status(Robot robot){
+
+    }
 }

@@ -5,7 +5,8 @@ import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
 
 public class CoordinateParser implements NativeMouseInputListener {
     public void nativeMouseClicked(NativeMouseEvent e) {
-        System.out.println("Mouse Click: " + e.getX() + ", " + e.getY());
+        if (e.getButton() == 3)
+            System.out.println("Mouse Click: " + e.getX() + ", " + e.getY());
     }
 
     public void nativeMousePressed(NativeMouseEvent e) {

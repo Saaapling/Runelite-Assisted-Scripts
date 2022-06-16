@@ -3,12 +3,15 @@ import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
+
+import static status_parser.image_parser.generate_image_bank;
 
 public class main {
 
     static User32 user32 = User32.INSTANCE;
+    static List<Client> clients;
 
     // Because I'm dumb
     public static void print(Object x){
@@ -17,7 +20,7 @@ public class main {
 
     public static void execute(){
         List<DesktopWindow> windows = WindowUtils.getAllWindows(true);
-        List<Client> clients = new ArrayList<>();
+        clients = new ArrayList<>();
 
         for (DesktopWindow desktopWindow: windows){
             if (desktopWindow.getTitle().contains("RuneLite")) {
@@ -33,8 +36,16 @@ public class main {
             print(x.get_dimensions());
         }
     }
-    public static void main(String[]args) throws InterruptedException {
+    public static void main(String[]args) throws Exception {
         execute();
+
+        for (Client client : clients){
+            client.show();
+        }
+
+        Thread.sleep(100);
+
+//        generate_image_bank(clients.get(0).get_dimensions());
     }
 
 }
