@@ -3,6 +3,8 @@ import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
+import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class main {
         System.out.println(x);
     }
 
-    public static void execute(){
+    public static void initialize_clients(){
         List<DesktopWindow> windows = WindowUtils.getAllWindows(true);
         clients = new ArrayList<>();
 
@@ -36,16 +38,27 @@ public class main {
             print(x.get_dimensions());
         }
     }
-    public static void main(String[]args) throws Exception {
-        execute();
 
-        for (Client client : clients){
-            client.show();
+    public static void get_health_test() throws IOException, AWTException, InterruptedException {
+        while (true){
+            int i = 0;
+            for (Client client : clients){
+                int[] status = client.update_status();
+                print("Client " + i + ": ");
+                print("Health: " + status[0]);
+                print("Prayer: " + status[1]);
+                print("Stamina: " + status[2]);
+                i += 1;
+            }
+
+            Thread.sleep(5000);
         }
+    }
 
-        Thread.sleep(100);
+    public static void main(String[]args) throws Exception {
+        initialize_clients();
 
-//        generate_image_bank(clients.get(0).get_dimensions());
+        get_health_test();
     }
 
 }
