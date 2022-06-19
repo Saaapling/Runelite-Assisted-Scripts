@@ -1,8 +1,12 @@
 package status_parser;
 
 
+import actions.Point;
+import base.Controller;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,9 +34,9 @@ public class image_parser {
     }
 
     public static void print_arr(int[][] arr){
-        for (int i = 0; i < arr.length; i++) {
+        for (int[] ints : arr) {
             for (int j = 0; j < arr[0].length; j++) {
-                System.out.print(arr[i][j] + ",");
+                System.out.print(ints[j] + ",");
             }
             print("");
         }
@@ -49,7 +53,7 @@ public class image_parser {
                 int pixel_int = image.getRGB(col, row);
                 int r = (pixel_int>>16)&0xFF;
                 int g = (pixel_int>>8)&0xFF;
-                int b = (pixel_int>>0)&0xFF;
+                int b = (pixel_int)&0xFF;
                 result[row][col] = new int[]{r, g, b};
             }
         }
@@ -109,9 +113,9 @@ public class image_parser {
 
         // Get Hashmap of # of times each color appears
         HashMap<String, Integer> color_map = new HashMap<>();
-        for (int row = 0; row < pixels.length; row++) {
+        for (int[][] pixel : pixels) {
             for (int col = 0; col < pixels[0].length; col++) {
-                int[] rgb_vals = pixels[row][col];
+                int[] rgb_vals = pixel[col];
                 String rgb_string = rgb_vals[0] + "," + rgb_vals[1] + "," + rgb_vals[2];
                 color_map.merge(rgb_string, 1, Integer::sum);
             }
@@ -179,7 +183,7 @@ public class image_parser {
         ArrayList<int[][]> trimmed_digits = new ArrayList<>();
         for (int[][] digit : digits) {
             start = 0;
-            outer: for (int row = 0; row < digit.length; row++) {
+            for (int row = 0; row < digit.length; row++) {
                 boolean remove = true;
                 for (int col = 0; col < digit[0].length; col++) {
                     if (digit[row][col] == 1) {
@@ -192,7 +196,7 @@ public class image_parser {
                         start += 1;
                     } else {
                         trimmed_digits.add(Arrays.copyOfRange(digit, start, row));
-                        break outer;
+                        break;
                     }
             }
         }
@@ -260,6 +264,42 @@ public class image_parser {
             }
 
             Thread.sleep(1000);
+        }
+    }
+
+    public static void bank_screenshot() throws IOException, AWTException {
+        Robot robot = new Robot();
+
+
+        int x_offset = 48;
+        int y_offset = 36;
+        int slot = 1;
+        int size = 12;
+        BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        for (int i = 0; i < 8; i ++){
+            BufferedImage slot_img = screenShot.getSubimage(662  - size, 137 + (y_offset * i) - size, size * 2, size * 2);
+            ImageIO.write(slot_img, "PNG", new File(".\\src\\main\\sample_images\\" + slot + ".png"));
+            slot += 1;
+        }
+    }
+
+    public static void bank_x_screenshot() throws IOException, AWTException, InterruptedException {
+        Robot robot = new Robot();
+
+        int y_offset = 72;
+        int x_size = 230;
+        int y_size = 12;
+
+        Controller.mouse.move(new Point(670, 150));
+        robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+        Thread.sleep((long) (100 + Math.random() * 10));
+        robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+        Thread.sleep((long) (2000 + Math.random() * 10));
+
+        BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        for (int i = 0; i < 8; i ++){
+            BufferedImage slot_img = screenShot.getSubimage(670 - x_size / 2, 150 + y_offset - y_size / 2,  x_size, y_size);
+            ImageIO.write(slot_img, "PNG", new File(".\\src\\main\\sample_images\\withdraw_x.png"));
         }
     }
 

@@ -32,7 +32,7 @@ public class Client{
         set_window(User32.SW_RESTORE);
         WinDef.RECT rect = new WinDef.RECT();
         Controller.user32.GetWindowRect(hWnd, rect);
-//        set_window(User32.SW_SHOWMINIMIZED);
+        set_window(User32.SW_SHOWMINIMIZED);
 
         dimensions = rect.toRectangle();
         offset = new Point(dimensions.x, dimensions.y);
@@ -48,6 +48,7 @@ public class Client{
         Controller.user32.ShowWindow(hWnd, status);
     }
 
+    //Todo: Has difficulty recognizing when runelite is minimized vs when user clicks another window without minimizing
     public boolean get_window_status() {
         WinDef.RECT rect = new WinDef.RECT();
         Controller.user32.GetWindowRect(hWnd, rect);

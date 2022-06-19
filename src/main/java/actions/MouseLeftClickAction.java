@@ -16,12 +16,13 @@ public class MouseLeftClickAction extends MouseAction{
     }
 
     public void execute() throws InterruptedException, AWTException {
-        mouse.move(get_random_point(bounds));
+        mouse.move(Point.get_random_point(bounds));
+        Thread.sleep((long) (150 + Math.random() * 15));
 
         Robot robot = new Robot();
-//        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-        Thread.sleep((long) (4 + Math.random() * 4));
-//        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        Thread.sleep((long) (100 + Math.random() * 10));
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
 
 }

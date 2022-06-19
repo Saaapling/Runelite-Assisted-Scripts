@@ -1,28 +1,27 @@
 package base;
 
 import actions.*;
-import actions.Point;
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.sun.jna.platform.DesktopWindow;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
-import com.sun.jna.platform.win32.WinUser;
-import tasks.DefaultTask;
-import tasks.EdgevilleCrafting;
+import tasks.EdgevilleSapphireRings;
 import tasks.Task;
 
 import java.awt.*;
-import java.awt.event.InputEvent;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Controller {
+public class Controller implements NativeKeyListener {
 
     static User32 user32 = User32.INSTANCE;
     static List<Client> clients;
-    static MouseController mouse;
+    public static MouseController mouse;
     static ReentrantLock lock = new ReentrantLock();
 
     // Because I'm dumb
@@ -30,7 +29,7 @@ public class Controller {
         System.out.println(x);
     }
 
-    public static void initialize_clients(MouseController mouse) throws IOException, AWTException {
+    public static void initialize_clients(MouseController mouse) {
         List<DesktopWindow> windows = WindowUtils.getAllWindows(true);
         clients = new ArrayList<>();
 
@@ -46,12 +45,11 @@ public class Controller {
 
         for (Client x: clients){
             print(x.get_dimensions());
-            print(x.get_scale());
         }
     }
 
     public static void get_health_test() throws IOException, AWTException, InterruptedException {
-        while (true){
+        for (int j = 0; j < 60; j++){
             int i = 0;
             for (Client client : clients){
                 int[] status = client.update_status();
@@ -66,17 +64,29 @@ public class Controller {
         }
     }
 
+    public void nativeKeyPressed(NativeKeyEvent e){
+        System.out.println(e.getKeyCode());
+
+        if (e.getKeyCode() == 1){
+            System.exit(0);
+        }
+    }
+
     public static void main(String[]args) throws Exception {
+        GlobalScreen.registerNativeHook();
+        GlobalScreen.addNativeKeyListener(new Controller());
+
         mouse = new MouseController();
         initialize_clients(mouse);
 
         for (Client client : clients){
-            Task task = new EdgevilleCrafting(client, mouse, lock);
+            Task task = new EdgevilleSapphireRings(client, mouse, lock);
             task.start();
         }
 
 //        get_health_test();
-
+//        bank_screenshot();
+//        bank_x_screenshot();
 
 //        while (true) {
 //            Robot robot = new Robot();
@@ -91,5 +101,4 @@ public class Controller {
 //            Thread.sleep(5000);
 //        }
     }
-
 }

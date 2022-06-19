@@ -2,12 +2,14 @@ package base;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
 
-public class CoordinateParser implements NativeMouseInputListener {
+public class CoordinateParser implements NativeMouseInputListener, NativeKeyListener {
     public void nativeMouseClicked(NativeMouseEvent e) {
-        if (e.getButton() == 3)
+        if (e.getButton() == 2)
             System.out.println("Mouse Click: " + e.getX() + ", " + e.getY());
     }
 
@@ -27,10 +29,19 @@ public class CoordinateParser implements NativeMouseInputListener {
 //        System.out.println("Mouse Dragged: " + e.getX() + ", " + e.getY());
     }
 
+    public void nativeKeyPressed(NativeKeyEvent e){
+        System.out.println(e.getKeyCode());
+
+        if (e.getKeyCode() == 1){
+            System.exit(0);
+        }
+    }
+
     public static void main(String[] args) {
 
         try {
             GlobalScreen.registerNativeHook();
+            GlobalScreen.addNativeKeyListener(new CoordinateParser());
         }
         catch (NativeHookException ex) {
             System.err.println("There was a problem registering the native hook.");

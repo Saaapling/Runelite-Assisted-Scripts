@@ -9,10 +9,6 @@ public abstract class Action {
     int wait_time;
     String name = null;
 
-    public Action(int wait_time){
-        this.wait_time = wait_time;
-    }
-
     public int get_wait_time(){
         return wait_time;
     }
