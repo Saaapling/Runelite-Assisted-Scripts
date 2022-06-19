@@ -9,14 +9,13 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 import java.awt.*;
 import java.io.IOException;
 
-import static status_parser.image_parser.get_player_status;
+import static image_parsing.ImageParser.get_player_status;
 
 public class Client{
 
     Rectangle dimensions;
     Point offset;
-    double x_scale;
-    double y_scale;
+    Point scale;
     HWND hWnd;
     Player player;
     MouseController mouse;
@@ -32,13 +31,11 @@ public class Client{
         set_window(User32.SW_RESTORE);
         WinDef.RECT rect = new WinDef.RECT();
         Controller.user32.GetWindowRect(hWnd, rect);
-        set_window(User32.SW_SHOWMINIMIZED);
 
         dimensions = rect.toRectangle();
         offset = new Point(dimensions.x, dimensions.y);
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-        x_scale = (double) dimensions.width / size.width;
-        y_scale = (double) dimensions.height / size.height;
+        scale = new Point((double) dimensions.width / size.width, (double) dimensions.height / size.height);
 
         player = new Player();
         player.name = client_name.replace("RuneLite - ", "");
@@ -52,7 +49,8 @@ public class Client{
     public boolean get_window_status() {
         WinDef.RECT rect = new WinDef.RECT();
         Controller.user32.GetWindowRect(hWnd, rect);
-        return rect.toRectangle().getX() < 0;
+//        return rect.toRectangle().getX() < 0;
+        return false;
     }
 
     public Rectangle get_dimensions(){
@@ -64,7 +62,7 @@ public class Client{
     }
 
     public Point get_scale(){
-        return new Point(x_scale, y_scale);
+        return scale;
     }
 
     public void show(){

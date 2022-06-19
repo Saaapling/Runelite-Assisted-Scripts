@@ -9,12 +9,13 @@ import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
 
 public class CoordinateParser implements NativeMouseInputListener, NativeKeyListener {
     public void nativeMouseClicked(NativeMouseEvent e) {
-        if (e.getButton() == 2)
-            System.out.println("Mouse Click: " + e.getX() + ", " + e.getY());
+//        System.out.println("Mouse Cicked: " + e.getButton());
+
     }
 
     public void nativeMousePressed(NativeMouseEvent e) {
-//        System.out.println("Mouse Pressed: " + e.getButton());
+        if (e.getButton() == 2)
+            System.out.println("Mouse Click: " + e.getX() + ", " + e.getY());
     }
 
     public void nativeMouseReleased(NativeMouseEvent e) {
@@ -30,7 +31,7 @@ public class CoordinateParser implements NativeMouseInputListener, NativeKeyList
     }
 
     public void nativeKeyPressed(NativeKeyEvent e){
-        System.out.println(e.getKeyCode());
+//        System.out.println(e.getKeyCode());
 
         if (e.getKeyCode() == 1){
             System.exit(0);

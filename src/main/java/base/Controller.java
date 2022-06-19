@@ -17,17 +17,14 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static base.Utils.print;
+
 public class Controller implements NativeKeyListener {
 
     static User32 user32 = User32.INSTANCE;
     static List<Client> clients;
     public static MouseController mouse;
     static ReentrantLock lock = new ReentrantLock();
-
-    // Because I'm dumb
-    public static void print(Object x){
-        System.out.println(x);
-    }
 
     public static void initialize_clients(MouseController mouse) {
         List<DesktopWindow> windows = WindowUtils.getAllWindows(true);
@@ -64,9 +61,8 @@ public class Controller implements NativeKeyListener {
         }
     }
 
+    // Force quit when the ESC key is pressed
     public void nativeKeyPressed(NativeKeyEvent e){
-        System.out.println(e.getKeyCode());
-
         if (e.getKeyCode() == 1){
             System.exit(0);
         }
@@ -87,18 +83,5 @@ public class Controller implements NativeKeyListener {
 //        get_health_test();
 //        bank_screenshot();
 //        bank_x_screenshot();
-
-//        while (true) {
-//            Robot robot = new Robot();
-//            Point[] bounds = {new Point(1243, 299), new Point(1303, 415), new Point(1217, 485), new Point(1153, 391)};
-//            Action test_action = new MouseMoveAction(mouse, bounds, new Point(0, 0), 0, 5000);
-//
-//            test_action.execute();
-//            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-//            test_action.execute();
-//            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-//
-//            Thread.sleep(5000);
-//        }
     }
 }

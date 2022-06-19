@@ -1,12 +1,7 @@
-package status_parser;
-
-
-import actions.Point;
-import base.Controller;
+package image_parsing;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,30 +14,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class image_parser {
+import static image_parsing.Offsets.*;
 
-    static int health_x_offset = 240;
-    static int health_y_offset = 84;
-    static int prayer_x_offset = 240;
-    static int prayer_y_offset = 118;
-    static int stamina_x_offset = 231;
-    static int stamina_y_offset = 151;
-    static int fullscreen_offset = 4;
+public class ImageParser {
 
-    public static void print(Object x){
-        System.out.println(x);
-    }
-
-    public static void print_arr(int[][] arr){
-        for (int[] ints : arr) {
-            for (int j = 0; j < arr[0].length; j++) {
-                System.out.print(ints[j] + ",");
-            }
-            print("");
-        }
-    }
-
-    private static int[][][] image_to_rgb_array(BufferedImage image) {
+    static int[][][] image_to_rgb_array(BufferedImage image) {
 
         int width = image.getWidth();
         int height = image.getHeight();
@@ -61,7 +37,7 @@ public class image_parser {
         return result;
     }
 
-    private static int[][] transpose_matrix(int[][] matrix){
+    static int[][] transpose_matrix(int[][] matrix){
         int m = matrix.length;
         int n = matrix[0].length;
 
@@ -76,26 +52,26 @@ public class image_parser {
         return transposedMatrix;
     }
 
-    private static BufferedImage array_to_image(int pixels[][]) {
+    static BufferedImage array_to_image(int[][] pixels) {
 
         BufferedImage image = new BufferedImage(pixels[0].length, pixels.length, BufferedImage.TYPE_INT_RGB);
 
-        for (int x = 0; x < pixels.length; x++) {
-            for (int y = 0; y < pixels[0].length; y++) {
+        for (int y = 0; y < pixels.length; y++) {
+            for (int x = 0; x < pixels[0].length; x++) {
                 int rgb;
-                if (pixels[x][y] == 1)
+                if (pixels[y][x] == 1)
                     rgb = 0;
                 else{
                     rgb = 16777215; //(255<<16) + (255<<8) + 255
                 }
-                image.setRGB(y, x, rgb);
+                image.setRGB(x, y, rgb);
             }
         }
 
         return image;
     }
 
-    private static boolean matrix_comparison(int[][] a, int[][] b){
+    static boolean matrix_comparison(int[][] a, int[][] b){
         for (int i = 0; i < a.length; i++){
             if (!Arrays.equals(a[i], b[i]))
                 return false;
@@ -103,7 +79,7 @@ public class image_parser {
         return true;
     }
 
-    private static int[][] flatten_image(int[][][] pixels){
+    static int[][] flatten_image(int[][][] pixels){
         /*
             Leverages the idea that the number in Runelite have a mono-color background, and cast a mono-color shadow.
             Thus, there should be a total of 3 colors (RGB) values detected, the second of which represents the number.
@@ -158,7 +134,7 @@ public class image_parser {
         return binary_representation;
     }
 
-    private static ArrayList<int[][]> separate_blackened_imaged(int[][] binary_representation){
+    static ArrayList<int[][]> separate_blackened_imaged(int[][] binary_representation){
         // Separate the array into digit components
         binary_representation = transpose_matrix(binary_representation);
         ArrayList<int[][]> digits = new ArrayList<>();
@@ -203,107 +179,7 @@ public class image_parser {
         return trimmed_digits;
     }
 
-    private static void check_and_save_image(int pixels[][]) throws IOException {
-        String name_canidates = "abcdefghijklmnopqrstuvwxyz";
-
-        DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(".\\src\\main\\digit_images\\"));
-        boolean save = true;
-        for (Path path : stream) {
-            String filename = path.getFileName().toString();
-            BufferedImage image = ImageIO.read(new File(".\\src\\main\\digit_images\\" + filename));
-            int[][][] image_pixels = image_to_rgb_array(image);
-            int[][] image_matrix = flatten_image(image_pixels);
-
-            if (matrix_comparison(pixels, image_matrix)){
-                save = false;
-            }
-
-            name_canidates = name_canidates.substring(1);
-        }
-
-        if (save) {
-            BufferedImage image = array_to_image(pixels);
-            String filename = name_canidates.substring(0, 1);
-            print("Saving image: " + filename + ".png");
-            ImageIO.write(image, "PNG", new File(".\\src\\main\\digit_images\\" + filename + ".png"));
-        }
-    }
-
-    public static void generate_image_bank(Rectangle dimensions) throws AWTException, IOException, InterruptedException {
-        Robot robot = new Robot();
-
-        int max_x = dimensions.x + dimensions.width;
-        int min_y = dimensions.y;
-
-        int extra_offset = 0;
-        if (max_x != 1280 && max_x != 1920 && max_x != 3840) {
-            extra_offset = fullscreen_offset;
-        }
-
-        print(max_x + ", " + min_y);
-
-        for (int i = 0; i < 60; i++) {
-            BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-            BufferedImage health_box = screenShot.getSubimage(max_x - health_x_offset - extra_offset, min_y + health_y_offset + extra_offset, 19, 13);
-            BufferedImage prayer_box = screenShot.getSubimage(max_x - prayer_x_offset - extra_offset, min_y + prayer_y_offset + extra_offset, 19, 13);
-            BufferedImage stamina_box = screenShot.getSubimage(max_x - stamina_x_offset - extra_offset, min_y + stamina_y_offset + extra_offset, 19, 13);
-
-            ImageIO.write(screenShot, "PNG", new File(".\\src\\main\\sample_images\\screenshot.png"));
-            ImageIO.write(health_box, "PNG", new File(".\\src\\main\\sample_images\\health.png"));
-            ImageIO.write(prayer_box, "PNG", new File(".\\src\\main\\sample_images\\prayer.png"));
-            ImageIO.write(stamina_box, "PNG", new File(".\\src\\main\\sample_images\\stamina.png"));
-
-            BufferedImage[] image_list = {health_box, prayer_box, stamina_box};
-            for (BufferedImage image : image_list) {
-                int[][][] image_pixels = image_to_rgb_array(image);
-                int[][] binary_representation = flatten_image(image_pixels);
-                ArrayList<int[][]> digits = separate_blackened_imaged(binary_representation);
-                for (int[][] digit : digits) {
-                    check_and_save_image(digit);
-                }
-            }
-
-            Thread.sleep(1000);
-        }
-    }
-
-    public static void bank_screenshot() throws IOException, AWTException {
-        Robot robot = new Robot();
-
-
-        int x_offset = 48;
-        int y_offset = 36;
-        int slot = 1;
-        int size = 12;
-        BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-        for (int i = 0; i < 8; i ++){
-            BufferedImage slot_img = screenShot.getSubimage(662  - size, 137 + (y_offset * i) - size, size * 2, size * 2);
-            ImageIO.write(slot_img, "PNG", new File(".\\src\\main\\sample_images\\" + slot + ".png"));
-            slot += 1;
-        }
-    }
-
-    public static void bank_x_screenshot() throws IOException, AWTException, InterruptedException {
-        Robot robot = new Robot();
-
-        int y_offset = 72;
-        int x_size = 230;
-        int y_size = 12;
-
-        Controller.mouse.move(new Point(670, 150));
-        robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
-        Thread.sleep((long) (100 + Math.random() * 10));
-        robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
-        Thread.sleep((long) (2000 + Math.random() * 10));
-
-        BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-        for (int i = 0; i < 8; i ++){
-            BufferedImage slot_img = screenShot.getSubimage(670 - x_size / 2, 150 + y_offset - y_size / 2,  x_size, y_size);
-            ImageIO.write(slot_img, "PNG", new File(".\\src\\main\\sample_images\\withdraw_x.png"));
-        }
-    }
-
-    private static int parse_digit_image(int[][] binary_representation) throws IOException {
+    static int parse_digit_image(int[][] binary_representation) throws IOException {
         ArrayList<int[][]> digits = separate_blackened_imaged(binary_representation);
         int[] digit_arr = new int[digits.size()];
 

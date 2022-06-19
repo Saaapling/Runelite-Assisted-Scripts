@@ -2,7 +2,6 @@ package actions;
 
 public class MouseMoveAction extends MouseAction{
 
-
     public MouseMoveAction(MouseController mouse, Point[] bounds, int wait_time) {
         super(mouse, bounds, wait_time);
         this.name = "Mouse move";

@@ -1,6 +1,6 @@
 package actions;
 
-import java.util.Arrays;
+import static actions.Point.generate_rectangle;
 
 public abstract class MouseAction extends Action{
 
@@ -14,12 +14,7 @@ public abstract class MouseAction extends Action{
 
     public MouseAction(MouseController mouse, Point center, int size, int wait_time) {
         this.wait_time = wait_time;
-        bounds = new Point[]{
-                new Point(center.x - size, center.y - size),
-                new Point(center.x + size, center.y - size),
-                new Point(center.x + size, center.y + size),
-                new Point(center.x - size, center.y - size)
-        };
+        bounds = generate_rectangle(center, size);
         this.mouse = mouse;
     }
 }

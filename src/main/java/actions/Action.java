@@ -1,11 +1,10 @@
 package actions;
 
 import java.awt.*;
-import java.util.Arrays;
 
 public abstract class Action {
 
-    Point[] bounds; //Rhombus: Top/Bottom/Right/Left
+    Point[] bounds; //Expected to be a quadrilateral
     int wait_time;
     String name = null;
 

@@ -1,13 +1,11 @@
 package actions;
 
 import java.awt.*;
-import java.awt.event.InputEvent;
+
+import static image_parsing.Offsets.*;
 
 public class WithdrawXAction extends Action{
 
-    int base_x = 662;
-    int base_y = 137;
-    int base_size = 12;
     MouseController mouse;
     Point center;
 
@@ -16,45 +14,22 @@ public class WithdrawXAction extends Action{
         this.wait_time = wait_time;
         this.name = name;
 
-        center = new Point(base_x + (col - 1) * 48, base_y + (row - 1) * 36);
+        center = get_bank_coordinate(row, col);
     }
 
     public void execute() throws InterruptedException, AWTException {
-        Robot robot = new Robot();
+        Point[] bounds = Point.generate_rectangle(center, 12);
 
-        Point[] bounds = {
-                center.add(new Point(-12, -12)),
-                center.add(new Point(12, -12)),
-                center.add(new Point(12, 12)),
-                center.add(new Point(-12, 12))
-        };
-        Point item_coords = Point.get_random_point(bounds);
-        Action move_action = new MouseMoveAction(mouse, item_coords, 0, 500);
+        Point rand_point_on_item = Point.get_random_point(bounds);
+        Action move_action = new MouseMoveAction(mouse, rand_point_on_item, 0, 500);
         move_action.execute();
+        mouse.right_click();
 
-        int rand_sleep = 200 + (int) (Math.random() * 20);
-        Thread.sleep(rand_sleep);
+        Point withdraw_x_center = rand_point_on_item.add(new Point(0, bank_withdraw_x_height_offset));
+        bounds = Point.generate_rectangle(withdraw_x_center, bank_withdraw_x_width, bank_withdraw_x_height);
 
-        robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
-        Thread.sleep((long) (100 + Math.random() * 10));
-        robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
-        rand_sleep = 200 + (int) (Math.random() * 20);
-        Thread.sleep(rand_sleep);
-
-        item_coords = item_coords.add(new Point(0, 72));
-        bounds = new Point[]{
-                item_coords.add(new Point(-50, -6)),
-                item_coords.add(new Point(50, -6)),
-                item_coords.add(new Point(50, 6)),
-                item_coords.add(new Point(-50, 6))
-        };
         move_action = new MouseMoveAction(mouse, bounds, 500);
         move_action.execute();
-        rand_sleep = 200 + (int) (Math.random() * 20);
-        Thread.sleep(rand_sleep);
-        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-        Thread.sleep((long) (100 + Math.random() * 10));
-        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        Thread.sleep((long) (100 + Math.random() * 10));
+        mouse.left_click();
     }
 }

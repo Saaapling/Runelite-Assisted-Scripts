@@ -20,7 +20,7 @@ public class DefaultTask extends Task {
     public void run() {
         System.out.println( client.get_name() + ": Starting tasks.Task (" + task_name + ")");
 
-        while (true){
+        for (int i = 0; i < 10; i++){
             for (Action action : actions){
                 try {
                     action.execute();
