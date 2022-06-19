@@ -19,21 +19,26 @@ public class EdgevilleSapphireRings extends Task{
 
         actions = new ArrayList<>();
         System.out.println(client.get_offset());
-        Point[] bank_bounds = {new Point(433, 714), new Point(456, 711), new Point(447, 740), new Point(424, 737)};
-        actions.add(new MouseLeftClickAction(mouse, bank_bounds, 6000, "Bank Action"));
+        Point[] bank_bounds = {new Point(435, 716), new Point(454, 713), new Point(445, 738), new Point(426, 735)};
+        actions.add(new MouseLeftClickAction(mouse, bank_bounds, 10000, "Bank Action"));
 
         actions.add(new BankAllAction(mouse, 500));
-        actions.add(new WithdrawAction(mouse, 1, 2, 500, "Withdraw Ring Mould"));
-//        actions.add(new WithdrawXAction(mouse, 1, 4, 500,"Withdraw Sapphires"));
-        actions.add(new WithdrawXAction(mouse, 1, 3, 500,"Withdraw Gold"));
-        actions.add(new WithdrawXAction(mouse, 1, 3, 500,"Withdraw Gold"));
+//        actions.add(new WithdrawAction(mouse, 1, 2, 500, "Withdraw Ring Mould"));
+        actions.add(new WithdrawXAction(mouse, 1, 3, 500,"Withdraw Sapphires"));
+        actions.add(new WithdrawXAction(mouse, 1, 4, 500,"Withdraw Gold"));
 
         Point[] furnace_bounds = {new Point(1378, 361), new Point(1389, 373), new Point(1354, 405), new Point(1340, 386)};
-        actions.add(new MouseLeftClickAction(mouse, furnace_bounds, 6000, "Furnace Action"));
+        actions.add(new MouseLeftClickAction(mouse, furnace_bounds, 10000, "Furnace Action"));
 
+        /*
+            - Gold Ring: 54000
+            - Bronze bars: 45000
+         */
 //        Point make_ring = new Point(685, 375);
-        Point make_ring = new Point(635, 375);
-        actions.add(new MouseLeftClickAction(mouse, make_ring, 8, 54000, "Make Rings"));
+        Point make_gold_rings = new Point(635, 375);
+//        actions.add(new MouseLeftClickAction(mouse, make_gold_rings, 8, 54000, "Make Rings"));
+        Point make_bronze_bars = new Point(40, 963);
+        actions.add(new MouseLeftClickAction(mouse, make_bronze_bars, 20, 45000, "Make Bronze Bars"));
 
     }
 
@@ -41,7 +46,7 @@ public class EdgevilleSapphireRings extends Task{
         System.out.println("Starting Task: Edgeville Crafting (" + client.get_name() + ")");
 
         try {
-            while (true) {
+            for (int i = 0; i < 100; i++){
                 boolean locked = false;
                 for (Action action : actions) {
                     if (!locked){
@@ -51,7 +56,7 @@ public class EdgevilleSapphireRings extends Task{
 
                     boolean minimize = client.get_window_status();
                     // Todo: Fix me, get_window_status does not properly recognize when runelite is not in focus
-                    minimize = true;
+                    minimize = false;
                     if (minimize) {
                         client.show();
                         Thread.sleep(300);

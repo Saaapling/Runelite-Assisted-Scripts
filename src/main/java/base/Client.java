@@ -32,7 +32,7 @@ public class Client{
         set_window(User32.SW_RESTORE);
         WinDef.RECT rect = new WinDef.RECT();
         Controller.user32.GetWindowRect(hWnd, rect);
-        set_window(User32.SW_SHOWMINIMIZED);
+//        set_window(User32.SW_SHOWMINIMIZED);
 
         dimensions = rect.toRectangle();
         offset = new Point(dimensions.x, dimensions.y);
