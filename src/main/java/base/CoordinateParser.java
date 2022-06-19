@@ -1,3 +1,5 @@
+package base;
+
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;

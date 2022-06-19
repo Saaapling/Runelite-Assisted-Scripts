@@ -1,3 +1,7 @@
+package base;
+
+import actions.*;
+import actions.Point;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HWND;
@@ -7,32 +11,59 @@ import java.io.IOException;
 
 import static status_parser.image_parser.get_player_status;
 
-public class Client {
+public class Client{
 
     Rectangle dimensions;
+    Point offset;
+    double x_scale;
+    double y_scale;
     HWND hWnd;
     Player player;
+    MouseController mouse;
+    int state = User32.SW_SHOWMINIMIZED;
 
-    public Client(HWND window){
+
+    public Client(MouseController mouse, HWND window, String client_name){
+        this.mouse = mouse;
         hWnd = window;
 
-        // Grab Client Dimensions
+        // Grab base.Client Dimensions
         set_window(User32.SW_SHOWMINIMIZED);
         set_window(User32.SW_RESTORE);
         WinDef.RECT rect = new WinDef.RECT();
-        main.user32.GetWindowRect(hWnd, rect);
+        Controller.user32.GetWindowRect(hWnd, rect);
+//        set_window(User32.SW_SHOWMINIMIZED);
+
         dimensions = rect.toRectangle();
-        set_window(User32.SW_SHOWMINIMIZED);
+        offset = new Point(dimensions.x, dimensions.y);
+        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        x_scale = (double) dimensions.width / size.width;
+        y_scale = (double) dimensions.height / size.height;
 
         player = new Player();
+        player.name = client_name.replace("RuneLite - ", "");
     }
 
     public void set_window(int status){
-        main.user32.ShowWindow(hWnd, status);
+        Controller.user32.ShowWindow(hWnd, status);
+    }
+
+    public boolean get_window_status() {
+        WinDef.RECT rect = new WinDef.RECT();
+        Controller.user32.GetWindowRect(hWnd, rect);
+        return rect.toRectangle().getX() < 0;
     }
 
     public Rectangle get_dimensions(){
         return dimensions;
+    }
+
+    public Point get_offset(){
+        return offset;
+    }
+
+    public Point get_scale(){
+        return new Point(x_scale, y_scale);
     }
 
     public void show(){
@@ -40,10 +71,14 @@ public class Client {
         set_window(User32.SW_RESTORE);
     }
 
+    public void minimize(){
+        set_window(User32.SW_SHOWMINIMIZED);
+    }
+
     public int[] update_status() throws AWTException, IOException {
         boolean minimize = false;
         WinDef.RECT rect = new WinDef.RECT();
-        main.user32.GetWindowRect(hWnd, rect);
+        Controller.user32.GetWindowRect(hWnd, rect);
         if (rect.toRectangle().getX() < 0)
             minimize = true;
 
@@ -70,6 +105,10 @@ public class Client {
 
     public int get_stamina(){
         return player.stamina;
+    }
+
+    public String get_name() {
+        return player.name;
     }
 
 }
