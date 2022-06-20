@@ -1,7 +1,6 @@
 package actions;
 
-import java.awt.*;
-import java.awt.event.InputEvent;
+import base.MouseController;
 
 public class MouseLeftClickAction extends MouseAction{
 

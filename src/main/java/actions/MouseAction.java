@@ -1,5 +1,7 @@
 package actions;
 
+import base.MouseController;
+
 import static actions.Point.generate_rectangle;
 
 public abstract class MouseAction extends Action{

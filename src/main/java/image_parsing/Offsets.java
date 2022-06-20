@@ -23,9 +23,20 @@ public class Offsets {
     public static final int bank_withdraw_x_width = 50;
     public static final int bank_withdraw_x_height = 6;
 
+    // Inventory Offsets
+    public static final int inventory_base_x = 1719;
+    public static final int inventory_base_y = 752;
+    public static final int inventory_item_size = 15;
+    public static final int inventory_slot_width = 42;
+    public static final int inventory_slot_height = 36;
+
 
     public static Point get_bank_coordinate(int row, int col){
         return new Point(bank_base_x + (col - 1) * bank_slot_width, bank_base_y + (row - 1) * bank_slot_height);
+    }
+
+    public static Point get_inventory_coordinate(int row, int col){
+        return new Point(inventory_base_x + (col - 1) * inventory_slot_width, inventory_base_y + (row - 1) * inventory_slot_height);
     }
 
 }

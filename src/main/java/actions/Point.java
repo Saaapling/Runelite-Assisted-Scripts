@@ -29,16 +29,24 @@ public class Point {
         return new Point(x + a.x, y + a.y);
     }
 
+    public Point add(double a){
+        return new Point(x + a, y + a);
+    }
+
     public Point subtract(Point a){
         return new Point(x - a.x, y - a.y);
     }
 
-    public Point scale(double scale){
-        return new Point((int) (scale * x + 0.5), (int) (scale * y + 0.5));
+    public Point subtract(double a){
+        return new Point(x - a, y - a);
     }
 
     public Point scale(Point scale){
         return new Point(scale.x * x, scale.y * y);
+    }
+
+    public Point scale(double scale){
+        return new Point((int) (scale * x + 0.5), (int) (scale * y + 0.5));
     }
 
     public static Point[] generate_rectangle(Point center, int size){

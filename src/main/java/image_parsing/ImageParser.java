@@ -1,8 +1,11 @@
 package image_parsing;
 
+import actions.Point;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -239,5 +242,37 @@ public class ImageParser {
         }
 
         return status;
+    }
+
+    // Returns true only when the images are exact matches (Useful for inventory checking) - Potentially wasteful checking
+    public static boolean compare_images(BufferedImage image_a, BufferedImage image_b) {
+        DataBuffer data_a = image_a.getData().getDataBuffer();
+        DataBuffer data_b = image_b.getData().getDataBuffer();
+
+        if(data_a.getSize() != data_b.getSize())
+            return false;
+
+        for(int i = 0; i < data_a.getSize(); i++)
+            if(data_a.getElem(i) != data_b.getElem(i))
+                return false;
+
+        return true;
+    }
+
+    public static BufferedImage get_screenshot_roi(Point start, int width, int height) throws AWTException, IOException {
+        Robot robot = new Robot();
+        BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        BufferedImage sub_image = screenShot.getSubimage((int) start.getX(), (int) start.getY(), width, height);
+
+        ImageIO.write(sub_image, "PNG", new File(".\\src\\main\\sample_images\\current.png"));
+        return ImageIO.read(new File(".\\src\\main\\sample_images\\current.png"));
+    }
+
+    public static BufferedImage get_inventory_image(int row, int col) throws AWTException, IOException {
+        return ImageParser.get_screenshot_roi(
+            Offsets.get_inventory_coordinate(row, col).subtract(Offsets.inventory_item_size),
+            Offsets.inventory_item_size * 2,
+            Offsets.inventory_item_size * 2
+        );
     }
 }

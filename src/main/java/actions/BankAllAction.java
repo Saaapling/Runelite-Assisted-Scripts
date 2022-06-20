@@ -1,5 +1,7 @@
 package actions;
 
+import base.MouseController;
+
 import java.awt.*;
 
 public class BankAllAction extends Action{

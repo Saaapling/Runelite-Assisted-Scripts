@@ -1,5 +1,7 @@
 package actions;
 
+import base.MouseController;
+
 public class MouseMoveAction extends MouseAction{
 
     public MouseMoveAction(MouseController mouse, Point[] bounds, int wait_time) {

@@ -3,16 +3,22 @@ package tasks;
 import actions.Action;
 import base.Client;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
 
 public abstract class Task extends Thread {
 
-    String task_name;
-    Client client;
-    ArrayList<Action> actions;
+    public String task_name;
+    public Client client;
+    public HashMap<String, Action> actions;
+    public Deque<Action> action_queue;
 
     public Task(Client client){
         this.client = client;
+        actions = new HashMap<>();
+        action_queue = new ArrayDeque<>();
     }
 
     public String get_name() {
@@ -22,4 +28,15 @@ public abstract class Task extends Thread {
     public int get_sleep_time(int base_wait_time){
         return base_wait_time + (int) (Math.random() * Math.min(5000, Math.max(base_wait_time, 50) / 5));
     }
+
+    public Action get_next_action(){
+        Action next_action = action_queue.poll();
+
+        if (next_action != null){
+            action_queue.addLast(next_action);
+        }
+
+        return next_action;
+    }
+
 }

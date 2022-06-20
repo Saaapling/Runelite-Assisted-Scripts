@@ -1,12 +1,15 @@
 package base;
 
-import actions.*;
 import actions.Point;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HWND;
+import image_parsing.ImageParser;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import static image_parsing.ImageParser.get_player_status;
@@ -45,12 +48,25 @@ public class Client{
         Controller.user32.ShowWindow(hWnd, status);
     }
 
-    //Todo: Has difficulty recognizing when runelite is minimized vs when user clicks another window without minimizing
-    public boolean get_window_status() {
-        WinDef.RECT rect = new WinDef.RECT();
-        Controller.user32.GetWindowRect(hWnd, rect);
-//        return rect.toRectangle().getX() < 0;
-        return false;
+    // Returns true if the client is minimized or not visible
+    public boolean in_focus() {
+        WinDef.RECT runelite_rect = new WinDef.RECT();
+        Controller.user32.GetWindowRect(hWnd, runelite_rect);
+
+        if (runelite_rect.toRectangle().getX() < 0){
+            return false;
+        }
+
+        // Take a screenshot and search for the RuneLite logo
+        Point start = new Point(3,1);
+        int length = 20;
+        try {
+            BufferedImage runelite_logo = ImageParser.get_screenshot_roi(start, length, length);
+            BufferedImage base_logo = ImageIO.read(new File("src/main/java/image_parsing/RuneLite.png"));
+            return ImageParser.compare_images(runelite_logo, base_logo);
+        } catch (AWTException | IOException e) {
+            return false;
+        }
     }
 
     public Rectangle get_dimensions(){

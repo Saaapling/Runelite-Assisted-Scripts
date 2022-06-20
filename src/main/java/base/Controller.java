@@ -1,6 +1,5 @@
 package base;
 
-import actions.*;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
@@ -8,7 +7,7 @@ import com.sun.jna.platform.DesktopWindow;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
-import tasks.EdgevilleSapphireRings;
+import tasks.EdgevilleCrafting.EdgevilleCrafting;
 import tasks.Task;
 
 import java.awt.*;
@@ -76,7 +75,7 @@ public class Controller implements NativeKeyListener {
         initialize_clients(mouse);
 
         for (Client client : clients){
-            Task task = new EdgevilleSapphireRings(client, mouse, lock);
+            Task task = new EdgevilleCrafting(client, mouse, lock);
             task.start();
         }
 

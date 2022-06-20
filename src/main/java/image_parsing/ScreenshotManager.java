@@ -2,6 +2,10 @@ package image_parsing;
 
 import actions.Point;
 import base.Controller;
+import com.sun.jna.platform.DesktopWindow;
+import com.sun.jna.platform.WindowUtils;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,12 +17,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import static base.Utils.*;
 import static image_parsing.Offsets.*;
 import static image_parsing.ImageParser.*;
 
 public class ScreenshotManager {
+
+    static User32 user32 = User32.INSTANCE;
 
     private static void check_and_save_image(int[][] pixels) throws IOException {
         String name_canidates = "abcdefghijklmnopqrstuvwxyz";
@@ -119,5 +126,45 @@ public class ScreenshotManager {
                 bank_withdraw_x_height * 2
         );
         ImageIO.write(withdraw_x_img, "PNG", new File(".\\src\\main\\sample_images\\withdraw_x.png"));
+    }
+
+    public static void take_screenshot(Point start, int width, int height, String path) throws AWTException, IOException {
+        Robot robot = new Robot();
+
+        BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        BufferedImage sub_image = screenShot.getSubimage((int) start.getX(), (int) start.getY(), width, height);
+        ImageIO.write(sub_image, "PNG", new File(path));
+    }
+
+    public static void screenshot_inventory_items(String path) throws IOException, AWTException {
+        for (int row = 1; row <= 7; row++){
+            for (int col = 1; col <= 4; col++){
+                Point item_center = Offsets.get_inventory_coordinate(row, col);
+                String file_name = path + row + "_" + col + ".png";
+                take_screenshot(item_center.subtract(new Point(inventory_item_size, inventory_item_size)), inventory_item_size * 2, inventory_item_size * 2, file_name);
+            }
+        }
+    }
+
+    public static void main(String[]args) throws Exception {
+        List<DesktopWindow> windows = WindowUtils.getAllWindows(true);
+        Robot robot = new Robot();
+
+        for (DesktopWindow desktopWindow: windows){
+            if (desktopWindow.getTitle().contains("RuneLite")) {
+                print("Application Found: " + desktopWindow.getTitle());
+
+                // Get HWND and display window
+                WinDef.HWND hWnd = desktopWindow.getHWND();
+                user32.ShowWindow(hWnd, User32.SW_SHOWMINIMIZED);
+                user32.ShowWindow(hWnd, User32.SW_RESTORE);
+            }
+        }
+
+        String path = ".\\src\\main\\java\\image_parsing\\RuneLite.png";
+        Point start = new Point(3,1);
+        int length = 20;
+        take_screenshot(start, length, length, path);
+
     }
 }

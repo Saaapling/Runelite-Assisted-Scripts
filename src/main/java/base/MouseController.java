@@ -1,5 +1,6 @@
-package actions;
+package base;
 
+import actions.Point;
 import com.github.joonasvali.naturalmouse.api.MouseMotion;
 import com.github.joonasvali.naturalmouse.api.MouseMotionFactory;
 
@@ -19,7 +20,7 @@ public class MouseController {
     }
 
     public void move(Point point) throws InterruptedException {
-        MouseMotion motion = factory.build((int) point.x, (int) point.y);
+        MouseMotion motion = factory.build((int) point.getX(), (int) point.getY());
         motion.move();
         Thread.sleep(DefaultSleepValues.random_time_between_move_and_click());
     }

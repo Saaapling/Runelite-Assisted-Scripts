@@ -1,5 +1,7 @@
 package actions;
 
+import base.MouseController;
+
 import java.awt.*;
 
 import static image_parsing.Offsets.*;
