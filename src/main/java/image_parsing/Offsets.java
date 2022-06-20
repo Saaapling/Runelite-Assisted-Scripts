@@ -25,7 +25,8 @@ public class Offsets {
 
     // Inventory Offsets
     public static final int inventory_base_x = 1719;
-    public static final int inventory_base_y = 752;
+    //This value is dependent on the max height of the client, and is set in the Controller
+    public static int inventory_base_y = 752;
     public static final int inventory_item_size = 15;
     public static final int inventory_slot_width = 42;
     public static final int inventory_slot_height = 36;

@@ -7,6 +7,7 @@ import com.sun.jna.platform.DesktopWindow;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
+import image_parsing.Offsets;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
 import tasks.Task;
 
@@ -73,6 +74,8 @@ public class Controller implements NativeKeyListener {
 
         mouse = new MouseController();
         initialize_clients(mouse);
+
+        Offsets.inventory_base_y = clients.get(0).get_dimensions().height - 280;
 
         for (Client client : clients){
             Task task = new EdgevilleCrafting(client, mouse, lock);
