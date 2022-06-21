@@ -161,10 +161,7 @@ public class ScreenshotManager {
             }
         }
 
-        String path = ".\\src\\main\\java\\image_parsing\\RuneLite.png";
-        Point start = new Point(3,1);
-        int length = 20;
-        take_screenshot(start, length, length, path);
+        screenshot_inventory_items(".\\src\\main\\sample_images\\inventory");
 
     }
 }

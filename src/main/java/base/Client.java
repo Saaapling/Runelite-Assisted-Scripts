@@ -1,6 +1,7 @@
 package base;
 
 import actions.Point;
+import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HWND;
@@ -57,16 +58,14 @@ public class Client{
             return false;
         }
 
-        // Take a screenshot and search for the RuneLite logo
-        Point start = new Point(3,1);
-        int length = 20;
-        try {
-            BufferedImage runelite_logo = ImageParser.get_screenshot_roi(start, length, length);
-            BufferedImage base_logo = ImageIO.read(new File("src/main/java/image_parsing/RuneLite.png"));
-            return ImageParser.compare_images(runelite_logo, base_logo);
-        } catch (AWTException | IOException e) {
-            return false;
-        }
+        // Get Foreground Window
+        int MAX_TITLE_LENGTH = 1024;
+        char[] buffer = new char[MAX_TITLE_LENGTH * 2];
+        Controller.user32.GetWindowText(Controller.user32.GetForegroundWindow(), buffer, MAX_TITLE_LENGTH);
+        String active_window =  Native.toString(buffer);
+        System.out.println(active_window);
+
+        return active_window.contains(get_name());
     }
 
     public Rectangle get_dimensions(){

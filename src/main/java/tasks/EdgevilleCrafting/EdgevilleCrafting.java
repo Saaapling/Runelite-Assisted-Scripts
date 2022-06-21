@@ -22,6 +22,7 @@ public class EdgevilleCrafting extends Task {
 
     ReentrantLock lock;
     MouseController mouse;
+    static String default_task = "Bronze Bars";
     String task_type;
     int failsafe_counter = 0;
 
@@ -30,15 +31,14 @@ public class EdgevilleCrafting extends Task {
         this.lock = lock;
         this.mouse = mouse;
         task_name = "Edgeville Crafting (Rings)";
-        task_type = "Bronze Bars";
+        task_type = default_task;
 
         populate_actions();
-        populate_action_queue(task_type);
     }
 
     private void populate_actions(){
         Point[] bank_bounds = {new Point(435, 716), new Point(454, 713), new Point(445, 738), new Point(426, 735)};
-        actions.put("Move to Bank", new MouseLeftClickAction(mouse, bank_bounds, 10000, "Move to Bank"));
+        actions.put("Move to Bank", new MouseLeftClickAction(mouse, bank_bounds, 11000, "Move to Bank"));
         actions.put("Bank All", new BankAllAction(mouse, 500));
 
         // Bank Actions
@@ -49,10 +49,10 @@ public class EdgevilleCrafting extends Task {
         actions.put("Withdraw Tin", new WithdrawXAction(mouse, 1, 6, 500, "Withdraw Tin"));
 
         Point[] furnace_bounds = {new Point(1378, 361), new Point(1389, 373), new Point(1354, 405), new Point(1340, 386)};
-        actions.put("Move to Furnace", new MouseLeftClickAction(mouse, furnace_bounds, 10000, "Move to Furnace"));
+        actions.put("Move to Furnace", new MouseLeftClickAction(mouse, furnace_bounds, 11000, "Move to Furnace"));
 
         // Make Actions
-        actions.put("Make Sapphire Rings", new MouseLeftClickAction(mouse, new Point(685, 375), 8, 27000, "Make Sapphire Rings"));
+        actions.put("Make Sapphire Rings", new MouseLeftClickAction(mouse, new Point(685, 375), 8, 22000, "Make Sapphire Rings"));
         actions.put("Make Gold Rings", new MouseLeftClickAction(mouse, new Point(635, 375), 8, 45000, "Make Gold Rings"));
         actions.put("Make Bronze Bars", new MouseLeftClickAction(mouse, new Point(40, 963), 20, 45000, "Make Bronze Bars"));
     }
@@ -154,6 +154,7 @@ public class EdgevilleCrafting extends Task {
                 }
 
                 System.out.println("Task state is unhealthy, skipping current step: " + next_action.get_name());
+                System.out.println("Consecutive failures: " + failsafe_counter);
                 return get_next_action();
             }
         }
@@ -166,9 +167,17 @@ public class EdgevilleCrafting extends Task {
             lock.lock();
     }
 
+    public static void set_default_task(String type){
+        default_task = type;
+    }
+
+    public void set_task(String type){
+        task_type = type;
+    }
+
     public void run() {
         System.out.println("Starting Task: Edgeville Crafting (" + client.get_name() + ")");
-
+        populate_action_queue(task_type);
 
         Action next_action = get_next_action();
         boolean in_focus = true;
