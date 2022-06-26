@@ -8,6 +8,8 @@ import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import image_parsing.Offsets;
+import tasks.AFKTimer.AFKTimer;
+import tasks.DefaultTask;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
 import tasks.Task;
 
@@ -99,18 +101,15 @@ public class Controller implements NativeKeyListener {
         return task_constructor.newInstance(parameters.toArray());
     }
 
-    public static void main(String[]args) throws Exception {
-        GlobalScreen.registerNativeHook();
-        GlobalScreen.addNativeKeyListener(new Controller());
+    // Customize this method to set the task(s) as needed
+    public static void start_mono_task() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Class<?>[] parameter_class = {Client.class, Integer.class};
+        ArrayList<Object> parameters = new ArrayList<>(List.of(45000));
+        start_clients(AFKTimer.class, parameter_class, parameters);
+    }
 
-        mouse = new MouseController();
-        initialize_clients(mouse);
-
-//        Class<?>[] parameter_class = {Client.class, MouseController.class, ReentrantLock.class};
-//        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
-//        EdgevilleCrafting.set_default_task("Sapphire Rings");
-//        start_clients(EdgevilleCrafting.class, parameter_class, parameters);
-
+    // Customize this method to set the task(s) as needed
+    public static void start_multi_task() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         HashMap<String, Task> client_task_map = new HashMap<>();
 
         Class<?>[] parameter_class = {Client.class, MouseController.class, ReentrantLock.class};
@@ -125,15 +124,26 @@ public class Controller implements NativeKeyListener {
         EdgevilleCrafting task_2 = (EdgevilleCrafting) set_task(client_task_map, "willowsaaap", EdgevilleCrafting.class, parameter_class, parameters);
         if (task_2 != null) {
             task_2.set_task("Bronze Bars");
-            client_task_map.put("birchsaaap", task_2);
+            client_task_map.put("willowsaaap", task_2);
         }
 
         EdgevilleCrafting task_3 = (EdgevilleCrafting) set_task(client_task_map, "maplesaaap", EdgevilleCrafting.class, parameter_class, parameters);
         if (task_3 != null) {
             task_3.set_task("Bronze Bars");
-            client_task_map.put("birchsaaap", task_3);
+            client_task_map.put("maplesaaap", task_3);
         }
 
         start_clients(client_task_map);
+    }
+
+    public static void main(String[]args) throws Exception {
+        GlobalScreen.registerNativeHook();
+        GlobalScreen.addNativeKeyListener(new Controller());
+
+        mouse = new MouseController();
+        initialize_clients(mouse);
+
+        start_mono_task();
+        //start_multi_task();
     }
 }
