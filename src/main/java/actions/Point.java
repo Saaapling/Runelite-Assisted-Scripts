@@ -25,6 +25,26 @@ public class Point {
         return "(" + x + ", " + y + ")";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Point point)) return false;
+
+        if (Double.compare(point.x, x) != 0) return false;
+        return Double.compare(point.y, y) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(x);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
     public Point add(Point a){
         return new Point(x + a.x, y + a.y);
     }
@@ -99,7 +119,7 @@ public class Point {
         }
 
         Point rand_point = target[0].add(vector_a.scale(rand_scales[0]).add(vector_b.scale(rand_scales[1])));
-        System.out.println("Random point generated: " + rand_point);
+//        System.out.println("Random point generated: " + rand_point);
 
         return rand_point;
     }

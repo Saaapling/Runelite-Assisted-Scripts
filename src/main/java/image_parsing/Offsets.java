@@ -31,6 +31,10 @@ public class Offsets {
     public static final int inventory_slot_width = 42;
     public static final int inventory_slot_height = 36;
 
+    // Combat Bar Offsets
+    public static final int enemy_health_bar_x = 10;
+    public static final int enemy_health_bar_y = 70;
+
 
     public static Point get_bank_coordinate(int row, int col){
         return new Point(bank_base_x + (col - 1) * bank_slot_width, bank_base_y + (row - 1) * bank_slot_height);

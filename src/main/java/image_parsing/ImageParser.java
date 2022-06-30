@@ -21,6 +21,16 @@ import static image_parsing.Offsets.*;
 
 public class ImageParser {
 
+    static Robot robot;
+
+    static {
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static int[][][] image_to_rgb_array(BufferedImage image) {
 
         int width = image.getWidth();
@@ -259,8 +269,11 @@ public class ImageParser {
         return true;
     }
 
-    public static BufferedImage get_screenshot_roi(Point start, int width, int height) throws AWTException, IOException {
-        Robot robot = new Robot();
+    public static BufferedImage get_screenshot(){
+        return robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+    }
+
+    public static BufferedImage get_screenshot_roi(Point start, int width, int height) throws IOException {
         BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
         BufferedImage sub_image = screenShot.getSubimage((int) start.getX(), (int) start.getY(), width, height);
 
@@ -274,5 +287,18 @@ public class ImageParser {
             Offsets.inventory_item_size * 2,
             Offsets.inventory_item_size * 2
         );
+    }
+
+    public static Color get_color(Point coordinate) throws IOException {
+        return robot.getPixelColor((int) coordinate.getX(), (int) coordinate.getY());
+    }
+
+    public static Color get_color(Point coordinate, BufferedImage image) {
+        int pixel_int = image.getRGB((int) coordinate.getX(), (int) coordinate.getY());
+        int r = (pixel_int>>16)&0xFF;
+        int g = (pixel_int>>8)&0xFF;
+        int b = (pixel_int)&0xFF;
+
+        return new Color(r, g, b);
     }
 }

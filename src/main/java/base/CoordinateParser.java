@@ -7,6 +7,8 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
 
+import java.awt.*;
+
 public class CoordinateParser implements NativeMouseInputListener, NativeKeyListener {
     public void nativeMouseClicked(NativeMouseEvent e) {
 //        System.out.println("Mouse Cicked: " + e.getButton());
@@ -14,8 +16,23 @@ public class CoordinateParser implements NativeMouseInputListener, NativeKeyList
     }
 
     public void nativeMousePressed(NativeMouseEvent e) {
-        if (e.getButton() == 2)
+        if (e.getButton() == 2) {
             System.out.println("Mouse Click: " + e.getX() + ", " + e.getY());
+            Robot robot;
+            try {
+                robot = new Robot();
+            } catch (AWTException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            // The pixel color information at 20, 20
+            Color color = robot.getPixelColor(e.getX(), e.getY());
+
+            // Print the RGB information of the pixel color
+            System.out.println("Red   = " + color.getRed());
+            System.out.println("Green = " + color.getGreen());
+            System.out.println("Blue  = " + color.getBlue());
+        }
     }
 
     public void nativeMouseReleased(NativeMouseEvent e) {
