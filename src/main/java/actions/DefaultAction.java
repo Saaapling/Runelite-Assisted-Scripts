@@ -4,6 +4,7 @@ public class DefaultAction extends Action{
 
     public DefaultAction(int wait_time) {
         this.wait_time = wait_time;
+        this.name = "Default Action";
     }
 
     @Override

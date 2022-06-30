@@ -8,6 +8,7 @@ import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import image_parsing.Offsets;
+import tasks.AFKCombatHelper.AFKCombatHelper;
 import tasks.AFKTimer.AFKTimer;
 import tasks.DefaultTask;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
@@ -69,6 +70,13 @@ public class Controller implements NativeKeyListener {
 
     // Force quit when the ESC key is pressed
     public void nativeKeyPressed(NativeKeyEvent e){
+        if (e.getKeyCode() == 41){
+            if (lock.isHeldByCurrentThread()){
+                lock.unlock();
+            }else{
+                lock.lock();
+            }
+        }
         if (e.getKeyCode() == 1){
             System.exit(0);
         }
@@ -102,14 +110,18 @@ public class Controller implements NativeKeyListener {
     }
 
     // Customize this method to set the task(s) as needed
-    public static void start_mono_task() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        Class<?>[] parameter_class = {Client.class, Integer.class};
-        ArrayList<Object> parameters = new ArrayList<>(List.of(45000));
-        start_clients(AFKTimer.class, parameter_class, parameters);
+    public static void start_mono_task() throws Exception {
+//        Class<?>[] parameter_class = {Client.class, Integer.class};
+//        ArrayList<Object> parameters = new ArrayList<>(List.of(45000));
+//        start_clients(AFKTimer.class, parameter_class, parameters);
+
+        Class<?>[] parameter_class = {Client.class, MouseController.class, ReentrantLock.class};
+        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
+        start_clients(AFKCombatHelper.class, parameter_class, parameters);
     }
 
     // Customize this method to set the task(s) as needed
-    public static void start_multi_task() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static void start_multi_task() throws Exception {
         HashMap<String, Task> client_task_map = new HashMap<>();
 
         Class<?>[] parameter_class = {Client.class, MouseController.class, ReentrantLock.class};

@@ -29,5 +29,5 @@ bin/
 .DS_Store
 
 ### Misc ###
-/main/sample_images/
-/main/digit_imamges/
+**/sample_images/
+**/Test_*

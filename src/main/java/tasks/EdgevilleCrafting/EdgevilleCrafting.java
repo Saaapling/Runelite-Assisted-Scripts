@@ -4,6 +4,7 @@ import actions.*;
 import actions.Point;
 import base.Client;
 import base.MouseController;
+import tasks.InteractionTask;
 import tasks.Task;
 
 import javax.imageio.ImageIO;
@@ -18,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import static image_parsing.ImageParser.compare_images;
 import static image_parsing.ImageParser.get_inventory_image;
 
-public class EdgevilleCrafting extends Task {
+public class EdgevilleCrafting extends InteractionTask {
 
     ReentrantLock lock;
     MouseController mouse;
@@ -27,9 +28,7 @@ public class EdgevilleCrafting extends Task {
     int failsafe_counter = 0;
 
     public EdgevilleCrafting(Client client, MouseController mouse, ReentrantLock lock) {
-        super(client);
-        this.lock = lock;
-        this.mouse = mouse;
+        super(client, mouse, lock);
         task_name = "Edgeville Crafting (Rings)";
         task_type = default_task;
 
@@ -84,7 +83,6 @@ public class EdgevilleCrafting extends Task {
         action_queue.add(make_action);
     }
 
-
     private boolean check_task_health(String task){
         String base_path = ".\\src\\main\\java\\tasks\\EdgevilleCrafting\\InventoryImages\\";
 
@@ -134,7 +132,7 @@ public class EdgevilleCrafting extends Task {
             }
         }
 
-        failsafe_counter = Math.min(0, failsafe_counter - 1);
+        failsafe_counter = Math.max(0, failsafe_counter - 1);
         return true;
     }
 
@@ -162,11 +160,6 @@ public class EdgevilleCrafting extends Task {
         return next_action;
     }
 
-    public void fetch_lock(boolean lock_state){
-        if (!lock_state)
-            lock.lock();
-    }
-
     public static void set_default_task(String type){
         default_task = type;
     }
@@ -179,31 +172,34 @@ public class EdgevilleCrafting extends Task {
         System.out.println("Starting Task: Edgeville Crafting (" + client.get_name() + ")");
         populate_action_queue(task_type);
 
+        fetch_lock();
+        boolean in_focus = client.in_focus();
+        if (!in_focus) {
+            client.show();
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                lock.unlock();
+            }
+        }
+
         Action next_action = get_next_action();
-        boolean in_focus = true;
-        boolean locked = true;
-        fetch_lock(false);
 
         while (next_action != null) {
             try {
                 System.out.println(client.get_name() + ": " + next_action.get_name());
                 next_action.execute();
+
                 int wait_time = next_action.get_wait_time();
+                if (wait_time > 5000 && !in_focus)
+                    client.minimize();
 
-                if (wait_time > 5000) {
-                    if (!in_focus)
-                        client.minimize();
-                    lock.unlock();
-                    locked = false;
-                }
-
+                lock.unlock();
                 int rand_sleep = get_sleep_time(wait_time);
                 System.out.println("Sleeping (" + client.get_name() + "): " + rand_sleep + "ms");
                 Thread.sleep(rand_sleep);
 
-                fetch_lock(locked);
-                locked = true;
-
+                fetch_lock();
                 in_focus = client.in_focus();
                 if (!in_focus) {
                     client.show();
@@ -212,7 +208,6 @@ public class EdgevilleCrafting extends Task {
                 next_action = get_next_action();
             } catch (Exception e){
                 lock.unlock();
-                locked = false;
             }
         }
 
