@@ -9,6 +9,7 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import image_parsing.Offsets;
 import tasks.AFKCombatHelper.AFKCombatHelper;
+import tasks.AFKCombatHelper.AFKCombatLooter;
 import tasks.AFKTimer.AFKTimer;
 import tasks.DefaultTask;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
@@ -117,7 +118,7 @@ public class Controller implements NativeKeyListener {
 
         Class<?>[] parameter_class = {Client.class, MouseController.class, ReentrantLock.class};
         ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
-        start_clients(AFKCombatHelper.class, parameter_class, parameters);
+        start_clients(AFKCombatLooter.class, parameter_class, parameters);
     }
 
     // Customize this method to set the task(s) as needed

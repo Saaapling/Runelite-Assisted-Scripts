@@ -2,6 +2,8 @@ package image_parsing;
 
 import actions.Point;
 
+import java.awt.*;
+
 public class Offsets {
 
     // Status Offsets
@@ -42,6 +44,19 @@ public class Offsets {
 
     public static Point get_inventory_coordinate(int row, int col){
         return new Point(inventory_base_x + (col - 1) * inventory_slot_width, inventory_base_y + (row - 1) * inventory_slot_height);
+    }
+
+    public static Point get_enemy_health_coordinate(Rectangle dimensions){
+        int extra_offset = 0;
+        // Offsets are slightly different when the client is not maximized
+        if (dimensions.getX() != 0 || dimensions.getY() != 0){
+            extra_offset = 4;
+        }
+
+        System.out.println(new Point(dimensions.getX() + Offsets.enemy_health_bar_x + extra_offset,
+                dimensions.getY() + Offsets.enemy_health_bar_y));
+        return new Point(dimensions.getX() + Offsets.enemy_health_bar_x + extra_offset,
+                dimensions.getY() + Offsets.enemy_health_bar_y);
     }
 
 }

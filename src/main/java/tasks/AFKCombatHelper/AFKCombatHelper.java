@@ -19,6 +19,7 @@ import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static base.Utils.print;
+import static image_parsing.ImageParser.get_color;
 
 public class AFKCombatHelper extends InteractionTask {
 
@@ -31,8 +32,8 @@ public class AFKCombatHelper extends InteractionTask {
         actions.put("Passive Wait", new WaitAction(5000, "Passive Waiting", client.get_name() + ": No target found, waiting 5 seconds"));
     }
 
-    private boolean get_combat_status() throws IOException {
-        Color target = ImageParser.get_color(new Point(Offsets.enemy_health_bar_x, Offsets.enemy_health_bar_y));
+    public boolean get_combat_status() throws IOException {
+        Color target = get_color(Offsets.get_enemy_health_coordinate(client.get_dimensions()));
 
         // Rough Estimates for the RuneLite green health bar
         if (target.getRed() > 10)
@@ -42,10 +43,11 @@ public class AFKCombatHelper extends InteractionTask {
         return 35 <= target.getBlue() && target.getBlue() <= 75;
     }
 
-    public Point find_target(Color target_rgb, BufferedImage image) throws IOException {
+    public Point find_target(Color target_rgb, BufferedImage image, double search_size, int offset_size) throws IOException {
         Rectangle dimensions = client.get_dimensions();
-        Point center = new Point(dimensions.width / 2d, dimensions.height / 2d);
-        for (int offset = 0; offset < Math.min(dimensions.width, dimensions.height) / 2; offset+=25){
+        Point center = new Point(dimensions.getX() + dimensions.width / 2d, dimensions.getY() + dimensions.height / 2d);
+        print(center);
+        for (int offset = 0; offset < Math.min(dimensions.width, dimensions.height) * search_size / 2; offset+=offset_size){
             Point start = center.subtract(offset);
             Point end = center.add(offset);
             for (int i = 0; i <= offset * 2; i+=5){
@@ -56,7 +58,7 @@ public class AFKCombatHelper extends InteractionTask {
                         end.subtract(new Point(0, i))
                 };
                 for (Point coordinate : coordinates){
-                    Color color = ImageParser.get_color(coordinate, image);
+                    Color color = get_color(coordinate, image);
                     if (target_rgb.equals(color)){
                         return coordinate;
                     }
@@ -64,6 +66,10 @@ public class AFKCombatHelper extends InteractionTask {
             }
         }
         return null;
+    }
+
+    public Point find_target(Color target_rgb, BufferedImage image) throws IOException {
+        return find_target(target_rgb, image, 1, 25);
     }
 
     public static Point[] get_target_points(Point coordinate, Color target_rgb, BufferedImage image) throws IOException {
