@@ -7,12 +7,9 @@ import base.MouseController;
 import image_parsing.ImageParser;
 import image_parsing.Offsets;
 import tasks.InteractionTask;
-import tasks.Task;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -32,7 +29,7 @@ public class AFKCombatHelper extends InteractionTask {
         actions.put("Passive Wait", new WaitAction(5000, "Passive Waiting", client.get_name() + ": No target found, waiting 5 seconds"));
     }
 
-    public boolean get_combat_status() throws IOException {
+    public boolean get_combat_status() {
         Color target = get_color(Offsets.get_enemy_health_coordinate(client.get_dimensions()));
 
         // Rough Estimates for the RuneLite green health bar
@@ -43,10 +40,9 @@ public class AFKCombatHelper extends InteractionTask {
         return 35 <= target.getBlue() && target.getBlue() <= 75;
     }
 
-    public Point find_target(Color target_rgb, BufferedImage image, double search_size, int offset_size) throws IOException {
+    public Point find_target(Color target_rgb, BufferedImage image, double search_size, int offset_size) {
         Rectangle dimensions = client.get_dimensions();
         Point center = new Point(dimensions.getX() + dimensions.width / 2d, dimensions.getY() + dimensions.height / 2d);
-        print(center);
         for (int offset = 0; offset < Math.min(dimensions.width, dimensions.height) * search_size / 2; offset+=offset_size){
             Point start = center.subtract(offset);
             Point end = center.add(offset);
@@ -68,15 +64,18 @@ public class AFKCombatHelper extends InteractionTask {
         return null;
     }
 
-    public Point find_target(Color target_rgb, BufferedImage image) throws IOException {
+    public Point find_target(Color target_rgb, BufferedImage image) {
         return find_target(target_rgb, image, 1, 25);
     }
 
-    public static Point[] get_target_points(Point coordinate, Color target_rgb, BufferedImage image) throws IOException {
+    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
+    public static Point get_target_center(Point coordinate, Color target_rgb, BufferedImage image) {
         HashSet<Point> points = new HashSet<>();
         Queue<Point> processing_queue = new LinkedList<>();
         processing_queue.add(coordinate);
 
+        long x_sum = 0;
+        long y_sum = 0;
         while (!processing_queue.isEmpty()) {
             Point center = processing_queue.poll();
             for (int x = -1; x <= 1; x++) {
@@ -86,87 +85,67 @@ public class AFKCombatHelper extends InteractionTask {
                         if (target_rgb.equals(ImageParser.get_color(target, image))) {
                             points.add(target);
                             processing_queue.add(target);
+                            x_sum += target.getX();
+                            y_sum += target.getY();
                         }
                     }
                 }
             }
         }
 
-        return points.toArray(new Point[0]);
+        return new Point(x_sum / points.size(), y_sum / points.size());
     }
 
     public Action get_next_action(){
         Color target_rgb = new Color(0 , 255, 255);
 
+        // Target has been found, check that it has not moved before attacking
         MouseAction next_action = (MouseAction) action_queue.poll();
         if (next_action != null){
             Point target = next_action.get_random_point_in_bounds();
-            try {
-                if (target_rgb.equals(ImageParser.get_color(target))){
-                    print(client.get_name() + ": Attacking target");
-                    return next_action;
-                }
-            } catch (IOException e) {
-                lock.unlock();
-                failsafe_counter += 1;
-                return actions.get("Passive Wait");
+            if (target_rgb.equals(ImageParser.get_color(target))){
+                print(client.get_name() + ": Attacking target");
+                return next_action;
             }
         }
 
-        try {
-            if (get_combat_status()){
-                return actions.get("Default Wait");
-            }else{
-                System.out.println(client.get_name() + ": Finding new target");
-
-                // Take a screenshot (faster when computing multiple (hundreds) of points)
-                BufferedImage image = ImageParser.get_screenshot();
-
-                Point target = find_target(target_rgb, image);
-                if (target == null){
-                    failsafe_counter += 1;
-                    return actions.get("Passive Wait");
-                } else{
-                    failsafe_counter = 0;
-                }
-                Point[] points = get_target_points(target, target_rgb, image);
-                Point random_point = points[(int) (Math.random() * points.length)];
-                if (!target_rgb.equals(ImageParser.get_color(random_point))){
-                    print(client.get_name() + ": Target already moved");
-                    return get_next_action();
-                }
-                print(client.get_name() + ": Target found");
-                action_queue.add(new MouseLeftClickAction(mouse, random_point, 0, 5000, "Attack monster"));
-                return new MouseMoveAction(mouse, random_point, 0, 0);
-            }
-        } catch (IOException ignored) {
-            lock.unlock();
+        // Check whether the player is already in combat
+        if (get_combat_status()){
+            return actions.get("Default Wait");
         }
 
-        failsafe_counter += 1;
-        return actions.get("Passive Wait");
+        // Take a screenshot (faster when computing multiple (hundreds) of points)
+        BufferedImage image = ImageParser.get_screenshot();
+
+        // Find a new target to attack
+        System.out.println(client.get_name() + ": Finding new target");
+        Point target = find_target(target_rgb, image);
+        if (target == null){
+            failsafe_counter += 1;
+            return actions.get("Passive Wait");
+        } else{
+            failsafe_counter = 0;
+        }
+        print(client.get_name() + ": Target found");
+        Point target_center = get_target_center(target, target_rgb, image);
+        action_queue.add(new MouseLeftClickAction(mouse, target_center, 0, 5000, "Attack monster"));
+        return new MouseMoveAction(mouse, target_center, 30, 0);
     }
 
     public void run() {
         System.out.println("Starting Task: Combat Helper (" + client.get_name() + ")");
 
         fetch_lock();
-        boolean in_focus = client.in_focus();
-        if (!in_focus) {
-            client.show();
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                lock.unlock();
-            }
-        }
-        Action next_action = get_next_action();
-
-        while (failsafe_counter < 3){
-            try {
+        try {
+            focus_client();
+            Action next_action = get_next_action();
+            while (failsafe_counter < 3){
+                if (!next_action.get_name().contains("Wait")){
+                    System.out.println(client.get_name() + ": " + next_action.get_name());
+                }
                 next_action.execute();
 
-                lock.unlock();
+                release_lock();
                 int wait_time = next_action.get_wait_time();
                 int rand_sleep = get_sleep_time(wait_time);
                 if (rand_sleep > 0) {
@@ -175,14 +154,12 @@ public class AFKCombatHelper extends InteractionTask {
                 }
 
                 fetch_lock();
-                if (!client.in_focus()) {
-                    client.show();
-                    Thread.sleep(300);
-                }
+                focus_client();
                 next_action = get_next_action();
-            } catch (Exception e){
-                lock.unlock();
             }
+        }catch (Exception e){
+            print(e.fillInStackTrace());
+            release_lock();
         }
 
         System.out.println("Task finished: " + client.get_name());

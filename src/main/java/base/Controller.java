@@ -10,6 +10,7 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 import image_parsing.Offsets;
 import tasks.AFKCombatHelper.AFKCombatHelper;
 import tasks.AFKCombatHelper.AFKCombatLooter;
+import tasks.AFKCombatHelper.AFKCombatManager;
 import tasks.AFKTimer.AFKTimer;
 import tasks.DefaultTask;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
@@ -53,7 +54,7 @@ public class Controller implements NativeKeyListener {
         }
     }
 
-    public static void get_health_test() throws IOException, AWTException, InterruptedException {
+    public static void get_health_test() throws IOException, InterruptedException {
         for (int j = 0; j < 60; j++){
             int i = 0;
             for (Client client : clients.values()){
@@ -118,7 +119,7 @@ public class Controller implements NativeKeyListener {
 
         Class<?>[] parameter_class = {Client.class, MouseController.class, ReentrantLock.class};
         ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
-        start_clients(AFKCombatLooter.class, parameter_class, parameters);
+        start_clients(AFKCombatManager.class, parameter_class, parameters);
     }
 
     // Customize this method to set the task(s) as needed

@@ -83,7 +83,7 @@ public class Point {
                 new Point(center.x - width, center.y - height),
                 new Point(center.x + width, center.y - height),
                 new Point(center.x + width, center.y + height),
-                new Point(center.x - width, center.y - height)
+                new Point(center.x - width, center.y + height)
         };
     }
 

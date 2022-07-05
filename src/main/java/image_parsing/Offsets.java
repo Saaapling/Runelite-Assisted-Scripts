@@ -53,8 +53,6 @@ public class Offsets {
             extra_offset = 4;
         }
 
-        System.out.println(new Point(dimensions.getX() + Offsets.enemy_health_bar_x + extra_offset,
-                dimensions.getY() + Offsets.enemy_health_bar_y));
         return new Point(dimensions.getX() + Offsets.enemy_health_bar_x + extra_offset,
                 dimensions.getY() + Offsets.enemy_health_bar_y);
     }

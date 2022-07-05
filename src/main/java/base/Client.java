@@ -7,10 +7,7 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import image_parsing.ImageParser;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import static image_parsing.ImageParser.get_player_status;
@@ -88,14 +85,15 @@ public class Client{
         set_window(User32.SW_SHOWMINIMIZED);
     }
 
-    public int[] update_status() throws AWTException, IOException {
+    public int[] update_status() throws IOException {
         boolean minimize = false;
         WinDef.RECT rect = new WinDef.RECT();
         Controller.user32.GetWindowRect(hWnd, rect);
         if (rect.toRectangle().getX() < 0)
             minimize = true;
 
-        show();
+        if (!in_focus())
+            show();
 
         int[] status = get_player_status(dimensions);
         player.health = status[0];
@@ -106,6 +104,10 @@ public class Client{
             set_window(User32.SW_SHOWMINIMIZED);
 
         return status;
+    }
+
+    public void update_inventory() throws IOException {
+        player.update_inventory(ImageParser.get_inventory());
     }
 
     public int get_health(){
@@ -124,4 +126,27 @@ public class Client{
         return player.name;
     }
 
+    public Point get_food_slot(){
+        return player.get_food_slot();
+    }
+
+    public Point get_prayer_slot(){
+        return player.get_prayer_slot();
+    }
+
+    public void consume_item(int row, int col){
+        player.consume_item(row, col);
+    }
+
+    public Point check_consumes(){
+        return player.check_consumes();
+    }
+
+    public boolean check_availability(){
+        return player.check_empty();
+    }
+
+    public void loot_item(){
+        player.fill_empty_slot();
+    }
 }

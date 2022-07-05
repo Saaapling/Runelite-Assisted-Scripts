@@ -21,4 +21,9 @@ public abstract class InteractionTask extends Task{
             lock.lock();
     }
 
+    public void release_lock(){
+        if (lock.isHeldByCurrentThread())
+            lock.unlock();
+    }
+
 }

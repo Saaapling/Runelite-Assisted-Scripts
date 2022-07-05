@@ -120,7 +120,7 @@ public class EdgevilleCrafting extends InteractionTask {
                     actual.addAll(List.of(new BufferedImage[]{copper, tin}));
                 }
             }
-        } catch (AWTException | IOException e){
+        } catch (IOException e){
             failsafe_counter += 1;
             return false;
         }

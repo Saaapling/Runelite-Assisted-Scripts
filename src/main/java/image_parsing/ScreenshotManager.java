@@ -10,6 +10,7 @@ import com.sun.jna.platform.win32.WinDef;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -146,22 +147,67 @@ public class ScreenshotManager {
         }
     }
 
+    private static double check_empty(BufferedImage image){
+        DataBuffer data_a = image.getData().getDataBuffer();
+        ArrayList<Color> backgrounds = new ArrayList<>(List.of(
+                new Color(62,53,41),
+                new Color(64,54,44),
+                new Color(59,50,38)
+        ));
+
+        int counter = 0;
+        outer: for(int i = 0; i < data_a.getSize(); i+=3) {
+            int[] rgb = {data_a.getElem(i + 2), data_a.getElem(i + 1), data_a.getElem(i)};
+            Color curr = new Color(rgb[0], rgb[1], rgb[2]);
+
+            for (Color background : backgrounds) {
+                if (background.equals(curr)) {
+                    counter += 1;
+                    continue outer;
+                }
+            }
+        }
+
+        return counter / (data_a.getSize() / 3.d);
+    }
+
     public static void main(String[]args) throws Exception {
         List<DesktopWindow> windows = WindowUtils.getAllWindows(true);
         Robot robot = new Robot();
 
+        WinDef.HWND hWnd = null;
         for (DesktopWindow desktopWindow: windows){
             if (desktopWindow.getTitle().contains("RuneLite")) {
                 print("Application Found: " + desktopWindow.getTitle());
 
                 // Get HWND and display window
-                WinDef.HWND hWnd = desktopWindow.getHWND();
+                hWnd = desktopWindow.getHWND();
                 user32.ShowWindow(hWnd, User32.SW_SHOWMINIMIZED);
                 user32.ShowWindow(hWnd, User32.SW_RESTORE);
             }
         }
 
-        screenshot_inventory_items(".\\src\\main\\sample_images\\inventory");
+        screenshot_inventory_items(".\\src\\main\\sample_images\\inventory\\");
 
+        String path = ".\\src\\main\\sample_images\\inventory\\";
+        String target_path = ".\\src\\main\\java\\base\\InventoryImages\\";
+        BufferedImage base_image = ImageIO.read(new File(path + "1_1.png"));
+        double min = 1;
+        for (int row = 1; row <= 7; row++){
+            for (int col = 1; col <= 4; col++){
+                String file_name = path + row + "_" + col + ".png";
+                BufferedImage compare_image = ImageIO.read(new File(file_name));
+//                double similarity = image_similarity(base_image, compare_image);
+//                min = Math.min(min, similarity);
+//                print(similarity);
+
+                double similarity = check_empty(compare_image);
+                min = Math.min(min, similarity);
+                print(similarity);
+            }
+        }
+
+        print("Minimum similarity: " + min);
+        user32.ShowWindow(hWnd, User32.SW_SHOWMINIMIZED);
     }
 }

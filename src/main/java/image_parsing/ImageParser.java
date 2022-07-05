@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static image_parsing.Offsets.*;
@@ -48,6 +49,13 @@ public class ImageParser {
         }
 
         return result;
+    }
+
+    static int[] int_to_rgb_array(int pixel_int){
+        int r = (pixel_int>>16)&0xFF;
+        int g = (pixel_int>>8)&0xFF;
+        int b = (pixel_int)&0xFF;
+        return new int[]{r,g,b};
     }
 
     static int[][] transpose_matrix(int[][] matrix){
@@ -222,9 +230,7 @@ public class ImageParser {
         return number;
     }
 
-    public static int[] get_player_status(Rectangle dimensions) throws AWTException, IOException {
-        Robot robot = new Robot();
-
+    public static int[] get_player_status(Rectangle dimensions) throws IOException {
         int max_x = dimensions.x + dimensions.width;
         int min_y = dimensions.y;
 
@@ -238,10 +244,10 @@ public class ImageParser {
         BufferedImage prayer_box = screenShot.getSubimage(max_x - prayer_x_offset - extra_offset, min_y + prayer_y_offset + extra_offset, 19, 13);
         BufferedImage stamina_box = screenShot.getSubimage(max_x - stamina_x_offset - extra_offset, min_y + stamina_y_offset + extra_offset, 19, 13);
 
-        ImageIO.write(screenShot, "PNG", new File(".\\src\\main\\sample_images\\screenshot.png"));
-        ImageIO.write(health_box, "PNG", new File(".\\src\\main\\sample_images\\health.png"));
-        ImageIO.write(prayer_box, "PNG", new File(".\\src\\main\\sample_images\\prayer.png"));
-        ImageIO.write(stamina_box, "PNG", new File(".\\src\\main\\sample_images\\stamina.png"));
+//        ImageIO.write(screenShot, "PNG", new File(".\\src\\main\\sample_images\\screenshot.png"));
+//        ImageIO.write(health_box, "PNG", new File(".\\src\\main\\sample_images\\health.png"));
+//        ImageIO.write(prayer_box, "PNG", new File(".\\src\\main\\sample_images\\prayer.png"));
+//        ImageIO.write(stamina_box, "PNG", new File(".\\src\\main\\sample_images\\stamina.png"));
 
         BufferedImage[] image_list = {health_box, prayer_box, stamina_box};
         int[] status = new int[3];
@@ -269,6 +275,45 @@ public class ImageParser {
         return true;
     }
 
+    public static double image_similarity(BufferedImage image_a, BufferedImage image_b){
+        DataBuffer data_a = image_a.getData().getDataBuffer();
+        DataBuffer data_b = image_b.getData().getDataBuffer();
+
+        /*
+            This method is (currently) strictly used for inventory item comparisons. All images compared are expected
+            to have the same dimensions. If this method is expanded upon, some form of scaling can be done on the images
+            to make them the same size, and the actual comparison will be reworked
+         */
+        if(data_a.getSize() != data_b.getSize())
+            return 0;
+
+        ArrayList<Color> backgrounds = new ArrayList<>(List.of(
+                new Color(62,53,41),
+                new Color(64,54,44),
+                new Color(59,50,38)
+        ));
+        double total_diff = 0;
+        int skipped = 0;
+        outer: for(int i = 0; i < data_a.getSize(); i+=3) {
+            int[] rgb = {data_a.getElem(i + 2), data_a.getElem(i + 1), data_a.getElem(i)};
+            Color curr = new Color(rgb[0], rgb[1], rgb[2]);
+
+            for (Color background : backgrounds) {
+                if (background.equals(curr)) {
+                    skipped += 1;
+                    continue outer;
+                }
+            }
+
+            if (data_a.getElem(i) != data_b.getElem(i)
+                    || data_a.getElem(i + 1) != data_b.getElem(i + 1)
+                    || data_a.getElem(i + 2) != data_b.getElem(i + 2))
+                total_diff += 1;
+        }
+
+        return 1 - total_diff / (data_a.getSize() / 3.d - skipped);
+    }
+
     public static BufferedImage get_screenshot(){
         return robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
     }
@@ -281,15 +326,34 @@ public class ImageParser {
         return ImageIO.read(new File(".\\src\\main\\sample_images\\current.png"));
     }
 
-    public static BufferedImage get_inventory_image(int row, int col) throws AWTException, IOException {
-        return ImageParser.get_screenshot_roi(
+    public static BufferedImage get_inventory_image(int row, int col) throws IOException {
+        return get_screenshot_roi(
             Offsets.get_inventory_coordinate(row, col).subtract(Offsets.inventory_item_size),
             Offsets.inventory_item_size * 2,
             Offsets.inventory_item_size * 2
         );
     }
 
-    public static Color get_color(Point coordinate) throws IOException {
+    public static BufferedImage[][] get_inventory() throws IOException {
+        BufferedImage[][] inventory_images = new BufferedImage[7][4];
+
+        BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        for (int row = 1; row <= 7; row++){
+            for (int col = 1; col <= 4; col++){
+                Point item_center = Offsets.get_inventory_coordinate(row, col);
+                Point item_start = item_center.subtract(new Point(inventory_item_size, inventory_item_size));
+                BufferedImage sub_image = screenShot.getSubimage((int) item_start.getX(), (int) item_start.getY(),
+                        inventory_item_size * 2, inventory_item_size * 2);
+                ImageIO.write(sub_image, "PNG", new File(".\\src\\main\\sample_images\\current.png"));
+                sub_image = ImageIO.read(new File(".\\src\\main\\sample_images\\current.png"));
+                inventory_images[row-1][col-1] = sub_image;
+            }
+        }
+
+        return inventory_images;
+    }
+
+    public static Color get_color(Point coordinate){
         return robot.getPixelColor((int) coordinate.getX(), (int) coordinate.getY());
     }
 

@@ -32,6 +32,16 @@ public abstract class Task extends Thread {
         return base_wait_time + (int) (Math.random() * Math.min(5000, Math.max(base_wait_time, 50) / 5));
     }
 
+    public boolean focus_client() throws InterruptedException {
+        boolean in_focus = client.in_focus();
+        if (!in_focus) {
+            client.show();
+            Thread.sleep(300);
+            return true;
+        }
+        return false;
+    }
+
     public Action get_next_action(){
         Action next_action = action_queue.poll();
 
