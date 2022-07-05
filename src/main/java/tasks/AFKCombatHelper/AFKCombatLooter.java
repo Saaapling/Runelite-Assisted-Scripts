@@ -24,6 +24,7 @@ public class AFKCombatLooter extends AFKCombatHelper {
 
     private Point get_text_y(BufferedImage image, Color target_rgb, Point start, int limit, int increment){
         Point curr_y = start;
+        curr_y = new Point(curr_y.getX() + increment, curr_y.getY());
         int counter = 0;
         while (counter < limit){
             if (!target_rgb.equals(get_color(curr_y, image))){
@@ -39,6 +40,7 @@ public class AFKCombatLooter extends AFKCombatHelper {
 
     private Point get_text_x(BufferedImage image, Color target_rgb, Point start, int limit, int increment){
         Point curr_x = start;
+        curr_x = new Point(curr_x.getX() + increment, curr_x.getY());
         int counter = 0;
         while (counter < limit){
             if (!target_rgb.equals(get_color(curr_x, image))){
