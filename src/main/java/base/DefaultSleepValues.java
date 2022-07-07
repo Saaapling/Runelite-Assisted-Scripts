@@ -10,4 +10,8 @@ public class DefaultSleepValues {
         return (int) (50 + Math.random() * 15);
     }
 
+    static int random_time_between_key_strokes(){
+        return (int) (75 + Math.random() * 15);
+    }
+
 }

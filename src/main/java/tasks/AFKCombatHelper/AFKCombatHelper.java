@@ -3,7 +3,7 @@ package tasks.AFKCombatHelper;
 import actions.*;
 import actions.Point;
 import base.Client;
-import base.MouseController;
+import base.InputController;
 import image_parsing.ImageParser;
 import image_parsing.Offsets;
 import tasks.InteractionTask;
@@ -22,7 +22,7 @@ public class AFKCombatHelper extends InteractionTask {
 
     int failsafe_counter = 0;
 
-    public AFKCombatHelper(Client client, MouseController mouse, ReentrantLock lock) {
+    public AFKCombatHelper(Client client, InputController mouse, ReentrantLock lock) {
         super(client, mouse, lock);
         task_name = "Combat Helper";
         actions.put("Default Wait", new WaitAction(1000, "Combat Waiting", client.get_name() + ": Still in combat, waiting 1 second"));

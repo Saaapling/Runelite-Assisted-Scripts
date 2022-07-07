@@ -1,6 +1,6 @@
 package actions;
 
-import base.MouseController;
+import base.InputController;
 
 import java.awt.*;
 
@@ -8,10 +8,10 @@ import static image_parsing.Offsets.*;
 
 public class WithdrawXAction extends Action{
 
-    MouseController mouse;
+    InputController mouse;
     Point center;
 
-    public WithdrawXAction(MouseController mouse, int row, int col, int wait_time, String name) {
+    public WithdrawXAction(InputController mouse, int row, int col, int wait_time, String name) {
         this.mouse = mouse;
         this.wait_time = wait_time;
         this.name = name;

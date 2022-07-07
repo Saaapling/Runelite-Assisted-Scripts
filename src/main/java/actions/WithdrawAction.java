@@ -1,6 +1,6 @@
 package actions;
 
-import base.MouseController;
+import base.InputController;
 
 import java.awt.*;
 
@@ -9,10 +9,10 @@ import static image_parsing.Offsets.*;
 public class WithdrawAction extends Action{
 
     int amount = 1;
-    MouseController mouse;
+    InputController mouse;
     Point center;
 
-    public WithdrawAction(MouseController mouse, int row, int col, int amount, int wait_time, String name) {
+    public WithdrawAction(InputController mouse, int row, int col, int amount, int wait_time, String name) {
         this.mouse = mouse;
         this.wait_time = wait_time;
         this.amount = amount;
@@ -21,7 +21,7 @@ public class WithdrawAction extends Action{
         center = get_bank_coordinate(row, col);
     }
 
-    public WithdrawAction(MouseController mouse, int row, int col, int wait_time, String name) {
+    public WithdrawAction(InputController mouse, int row, int col, int wait_time, String name) {
         this.mouse = mouse;
         this.wait_time = wait_time;
         this.name = name;

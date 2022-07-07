@@ -3,12 +3,10 @@ package tasks.EdgevilleCrafting;
 import actions.*;
 import actions.Point;
 import base.Client;
-import base.MouseController;
+import base.InputController;
 import tasks.InteractionTask;
-import tasks.Task;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,13 +19,11 @@ import static image_parsing.ImageParser.get_inventory_image;
 
 public class EdgevilleCrafting extends InteractionTask {
 
-    ReentrantLock lock;
-    MouseController mouse;
     static String default_task = "Bronze Bars";
     String task_type;
     int failsafe_counter = 0;
 
-    public EdgevilleCrafting(Client client, MouseController mouse, ReentrantLock lock) {
+    public EdgevilleCrafting(Client client, InputController mouse, ReentrantLock lock) {
         super(client, mouse, lock);
         task_name = "Edgeville Crafting (Rings)";
         task_type = default_task;
@@ -179,7 +175,7 @@ public class EdgevilleCrafting extends InteractionTask {
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e) {
-                lock.unlock();
+                release_lock();
             }
         }
 
@@ -194,7 +190,7 @@ public class EdgevilleCrafting extends InteractionTask {
                 if (wait_time > 5000 && !in_focus)
                     client.minimize();
 
-                lock.unlock();
+                release_lock();
                 int rand_sleep = get_sleep_time(wait_time);
                 System.out.println("Sleeping (" + client.get_name() + "): " + rand_sleep + "ms");
                 Thread.sleep(rand_sleep);
@@ -207,7 +203,7 @@ public class EdgevilleCrafting extends InteractionTask {
                 }
                 next_action = get_next_action();
             } catch (Exception e){
-                lock.unlock();
+                release_lock();
             }
         }
 

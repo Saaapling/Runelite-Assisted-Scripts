@@ -4,7 +4,6 @@ import java.awt.*;
 
 public abstract class Action {
 
-    Point[] bounds; //Expected to be a quadrilateral
     int wait_time;
     String name = null;
 

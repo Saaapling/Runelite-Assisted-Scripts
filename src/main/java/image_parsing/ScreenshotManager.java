@@ -137,6 +137,12 @@ public class ScreenshotManager {
         ImageIO.write(sub_image, "PNG", new File(path));
     }
 
+    public static void screenshot_inventory_item(String path, int row, int col) throws IOException, AWTException {
+        Point item_center = Offsets.get_inventory_coordinate(row, col);
+        String file_name = path + row + "_" + col + ".png";
+        take_screenshot(item_center.subtract(new Point(inventory_item_size, inventory_item_size)), inventory_item_size * 2, inventory_item_size * 2, file_name);
+    }
+
     public static void screenshot_inventory_items(String path) throws IOException, AWTException {
         for (int row = 1; row <= 7; row++){
             for (int col = 1; col <= 4; col++){
@@ -174,6 +180,7 @@ public class ScreenshotManager {
     public static void main(String[]args) throws Exception {
         List<DesktopWindow> windows = WindowUtils.getAllWindows(true);
         Robot robot = new Robot();
+        String path = ".\\src\\main\\sample_images\\inventory\\";
 
         WinDef.HWND hWnd = null;
         for (DesktopWindow desktopWindow: windows){
@@ -187,27 +194,8 @@ public class ScreenshotManager {
             }
         }
 
-        screenshot_inventory_items(".\\src\\main\\sample_images\\inventory\\");
+        screenshot_inventory_item(path, 1, 2);
 
-        String path = ".\\src\\main\\sample_images\\inventory\\";
-        String target_path = ".\\src\\main\\java\\base\\InventoryImages\\";
-        BufferedImage base_image = ImageIO.read(new File(path + "1_1.png"));
-        double min = 1;
-        for (int row = 1; row <= 7; row++){
-            for (int col = 1; col <= 4; col++){
-                String file_name = path + row + "_" + col + ".png";
-                BufferedImage compare_image = ImageIO.read(new File(file_name));
-//                double similarity = image_similarity(base_image, compare_image);
-//                min = Math.min(min, similarity);
-//                print(similarity);
-
-                double similarity = check_empty(compare_image);
-                min = Math.min(min, similarity);
-                print(similarity);
-            }
-        }
-
-        print("Minimum similarity: " + min);
         user32.ShowWindow(hWnd, User32.SW_SHOWMINIMIZED);
     }
 }

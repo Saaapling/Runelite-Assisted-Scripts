@@ -1,14 +1,14 @@
 package actions;
 
-import base.MouseController;
+import base.InputController;
 
 import java.awt.*;
 
 public class BankAllAction extends Action{
 
-    MouseController mouse;
+    InputController mouse;
 
-    public BankAllAction(MouseController mouse, int wait_time){
+    public BankAllAction(InputController mouse, int wait_time){
         this.mouse = mouse;
         this.wait_time = wait_time;
         this.name = "Bank All";

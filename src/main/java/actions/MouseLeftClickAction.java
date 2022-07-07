@@ -1,15 +1,15 @@
 package actions;
 
-import base.MouseController;
+import base.InputController;
 
 public class MouseLeftClickAction extends MouseAction{
 
-    public MouseLeftClickAction(MouseController mouse, Point[] bounds, int wait_time, String name) {
+    public MouseLeftClickAction(InputController mouse, Point[] bounds, int wait_time, String name) {
         super(mouse, bounds, wait_time);
         this.name = name;
     }
 
-    public MouseLeftClickAction(MouseController mouse, Point center, int size, int wait_time, String name) {
+    public MouseLeftClickAction(InputController mouse, Point center, int size, int wait_time, String name) {
         super(mouse, center, size, wait_time);
         this.name = name;
     }

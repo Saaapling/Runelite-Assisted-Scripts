@@ -29,7 +29,7 @@ public abstract class Task extends Thread {
         if (base_wait_time == 0){
             return 0;
         }
-        return base_wait_time + (int) (Math.random() * Math.min(5000, Math.max(base_wait_time, 50) / 5));
+        return base_wait_time + (int) (Math.random() * Math.min(5000, Math.max(base_wait_time, 50) / 15));
     }
 
     public boolean focus_client() throws InterruptedException {

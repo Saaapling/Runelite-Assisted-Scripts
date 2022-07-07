@@ -8,15 +8,11 @@ import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import image_parsing.Offsets;
-import tasks.AFKCombatHelper.AFKCombatHelper;
-import tasks.AFKCombatHelper.AFKCombatLooter;
 import tasks.AFKCombatHelper.AFKCombatManager;
-import tasks.AFKTimer.AFKTimer;
-import tasks.DefaultTask;
+import tasks.BlastFurnace.BlastFurnaceSmelter;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
 import tasks.Task;
 
-import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,10 +26,10 @@ public class Controller implements NativeKeyListener {
 
     static User32 user32 = User32.INSTANCE;
     static HashMap<String, Client> clients;
-    public static MouseController mouse;
+    public static InputController mouse;
     static ReentrantLock lock = new ReentrantLock();
 
-    public static void initialize_clients(MouseController mouse) {
+    public static void initialize_clients(InputController mouse) {
         List<DesktopWindow> windows = WindowUtils.getAllWindows(true);
         clients = new HashMap<>();
 
@@ -78,8 +74,10 @@ public class Controller implements NativeKeyListener {
             }else{
                 lock.lock();
             }
+        }else if (e.getKeyCode() == 56){
+            clients.get("Lycindria").print_inventory();
         }
-        if (e.getKeyCode() == 1){
+        if (e.getKeyCode() == 3667){
             System.exit(0);
         }
     }
@@ -117,16 +115,21 @@ public class Controller implements NativeKeyListener {
 //        ArrayList<Object> parameters = new ArrayList<>(List.of(45000));
 //        start_clients(AFKTimer.class, parameter_class, parameters);
 
-        Class<?>[] parameter_class = {Client.class, MouseController.class, ReentrantLock.class};
+//        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
+//        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
+//        start_clients(AFKCombatLooter.class, parameter_class, parameters);
+//        start_clients(AFKCombatManager.class, parameter_class, parameters);
+
+        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
         ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
-        start_clients(AFKCombatManager.class, parameter_class, parameters);
+        start_clients(BlastFurnaceSmelter.class, parameter_class, parameters);
     }
 
     // Customize this method to set the task(s) as needed
     public static void start_multi_task() throws Exception {
         HashMap<String, Task> client_task_map = new HashMap<>();
 
-        Class<?>[] parameter_class = {Client.class, MouseController.class, ReentrantLock.class};
+        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
         ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
 
         EdgevilleCrafting task_1 = (EdgevilleCrafting) set_task(client_task_map, "birchsaaap", EdgevilleCrafting.class, parameter_class, parameters);
@@ -154,7 +157,7 @@ public class Controller implements NativeKeyListener {
         GlobalScreen.registerNativeHook();
         GlobalScreen.addNativeKeyListener(new Controller());
 
-        mouse = new MouseController();
+        mouse = new InputController();
         initialize_clients(mouse);
 
         start_mono_task();
