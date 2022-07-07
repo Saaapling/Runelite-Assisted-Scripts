@@ -78,8 +78,10 @@ public class Controller implements NativeKeyListener {
             }else{
                 lock.lock();
             }
+        }else if (e.getKeyCode() == 56){
+            clients.get("Lycindria").print_inventory();
         }
-        if (e.getKeyCode() == 1){
+        if (e.getKeyCode() == 3667){
             System.exit(0);
         }
     }

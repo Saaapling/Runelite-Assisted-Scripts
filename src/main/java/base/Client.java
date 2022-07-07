@@ -141,12 +141,21 @@ public class Client{
     public Point check_consumes(){
         return player.check_consumes();
     }
-
     public boolean check_availability(){
         return player.check_empty();
     }
 
     public void loot_item(){
         player.fill_empty_slot();
+    }
+
+    // For testing purposes
+    public void print_inventory(){
+        for (int row = 1; row <= 7; row++) {
+            for (int col = 1; col <= 4; col++) {
+                System.out.print(player.inventory[row-1][col-1] + "\t");
+            }
+            System.out.println();
+        }
     }
 }

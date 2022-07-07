@@ -13,28 +13,36 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static base.Utils.print;
 
-public class AFKCombatManager extends AFKCombatLooter{
+public class AFKKrackenHelper extends AFKCombatLooter{
 
     boolean full = false;
     boolean user_initiated_combat = false;
 
-    public AFKCombatManager(Client client, MouseController mouse, ReentrantLock lock) throws IOException {
+    public AFKKrackenHelper(Client client, MouseController mouse, ReentrantLock lock) throws IOException {
         super(client, mouse, lock);
         client.update_inventory();
+
+        actions.put("Attack Kraken", new MouseLeftClickAction(mouse, new Point(940, 405), 50, 10000, "Attack Kraken"));
+    }
+
+    private boolean check_water(Color target){
+        if (35 < target.getRed() && target.getRed() < 55)
+            if (90 < target.getGreen() && target.getGreen() < 110)
+                return 70 < target.getBlue() && target.getBlue() < 90;
+        return false;
+    }
+
+    private boolean check_kraken(Color target){
+        return target.getBlue() < 30;
     }
 
     public Action get_next_action(){
 
         // Target has been found, check that it has not moved before attacking
         Action next_action = action_queue.poll();
-        if (next_action != null && next_action.get_name().equals("Attack monster")){
-            MouseAction action = (MouseAction) next_action;
-            actions.Point target = action.get_random_point_in_bounds();
-            if (npc_rgb.equals(ImageParser.get_color(target))){
-                user_initiated_combat = true;
-                failed_loot_attempts = 0;
-                return next_action;
-            }
+
+        if (next_action != null && next_action.get_name().equals("Attack Kraken")){
+            return next_action;
         }
 
         // Take a screenshot (faster when computing multiple (hundreds) of points)
@@ -43,30 +51,17 @@ public class AFKCombatManager extends AFKCombatLooter{
         // Check player status (health, prayer, buffs)
         try {
             client.update_status();
-            if (client.get_health() < 50){
+            if (client.get_health() < 70){
                 Point food_slot = client.get_food_slot();
                 if (food_slot != null){
                     // Consume Food
                     client.consume_item((int) food_slot.getX(), (int) food_slot.getY());
-                    return new InventoryAction(mouse, (int) food_slot.getX(), (int) food_slot.getY(), 1000, "Consume Food");
-                }else {
-                    failsafe_counter = Integer.MAX_VALUE;
-                    return null;
+                    // Continue attacking the kraken
+                    if (get_combat_status()){
+                        action_queue.add(actions.get("Attack Kraken"));
+                    }
+                    return new InventoryAction(mouse, (int) food_slot.getX(), (int) food_slot.getY(), 500, "Consume Food");
                 }
-            }
-            if (client.get_prayer() < 30){
-                Point prayer_item = client.get_prayer_slot();
-                if (prayer_item != null){
-                    // Consume Prayer Potion
-                    client.consume_item((int) prayer_item.getX(), (int) prayer_item.getY());
-                    return new InventoryAction(mouse, (int) prayer_item.getX(), (int) prayer_item.getY(), 1000, "Consume Prayer Potion");
-                }
-            }
-            Point buff_item = client.check_consumes();
-            if (buff_item != null){
-                // Consume Buff Item (Super Combat/Antifire, etc.)
-                client.consume_item((int) buff_item.getX(), (int) buff_item.getY());
-                return new InventoryAction(mouse, (int) buff_item.getX(), (int) buff_item.getY(), 1000, "Refresh Buff");
             }
         } catch (IOException ignored) { }
 
@@ -76,16 +71,8 @@ public class AFKCombatManager extends AFKCombatLooter{
             actions.Point[] item_box_bounds = find_item_text_bounds(image, item_rgb);
             if (item_box_bounds != null) {
                 failed_loot_attempts = 0;
-                // Scale the waiting time based on the run distance
-                Rectangle dimensions = client.get_dimensions();
-                actions.Point center = new actions.Point(dimensions.getX() + dimensions.width / 2d, dimensions.getY() + dimensions.height / 2d);
-                actions.Point difference = center.subtract(item_box);
-                double scale = Math.sqrt(Math.pow(difference.getX(), 2) + Math.pow(difference.getY(), 2)) /
-                        Math.sqrt(Math.pow(center.getX(), 2) + Math.pow(center.getY(), 2));
-                int wait_time = Math.max(1500, (int) (20000 * scale));
-
                 client.loot_item();
-                return new MouseLeftClickAction(mouse, item_box_bounds, wait_time, "Loot Item");
+                return new MouseLeftClickAction(mouse, item_box_bounds, 1500, "Loot Item");
             }
             failed_loot_attempts += 1;
         }
@@ -126,18 +113,23 @@ public class AFKCombatManager extends AFKCombatLooter{
             return actions.get("Default Wait");
         }
 
-        // Find a new target to attack
-        System.out.println(client.get_name() + ": Finding new target");
-        Point target = find_target(npc_rgb, image);
-        if (target == null){
-            failsafe_counter += 1;
-            return actions.get("Passive Wait");
-        } else{
-            failsafe_counter = 0;
+        // Attack new kraken spawn
+        if (check_kraken(ImageParser.get_color(new Point(1055, 348)))
+                || check_water(ImageParser.get_color(new Point(938, 405)))
+                || check_water(ImageParser.get_color(new Point(1055, 348)))){
+            // Kraken not yet spawned
+            return actions.get("Default Wait");
         }
-        print(client.get_name() + ": Target found");
-        Point target_center = get_target_center(target, npc_rgb, image);
-        action_queue.add(new MouseLeftClickAction(mouse, target_center, 0, 3000, "Attack monster"));
-        return new MouseMoveAction(mouse, target_center, 30, 0);
+
+        // Quit if we're out of food
+        if (client.get_health() < 50 && client.get_food_slot() != null) {
+            failsafe_counter = Integer.MAX_VALUE;
+            return null;
+        }
+
+        failed_loot_attempts = 0;
+        user_initiated_combat = true;
+        action_queue.add(actions.get("Attack Kraken"));
+        return new InventoryAction(mouse, 1, 1, 300, "Fishing Explosive");
     }
 }

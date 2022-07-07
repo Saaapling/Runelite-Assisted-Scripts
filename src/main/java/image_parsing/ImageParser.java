@@ -365,4 +365,8 @@ public class ImageParser {
 
         return new Color(r, g, b);
     }
+
+    public static void print_color(Color x){
+        System.out.println(x.getRed() + ", " + x.getGreen() + ", " + x.getBlue());
+    }
 }

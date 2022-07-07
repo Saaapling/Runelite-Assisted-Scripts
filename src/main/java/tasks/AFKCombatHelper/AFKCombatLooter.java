@@ -16,6 +16,9 @@ import static image_parsing.ImageParser.get_color;
 public class AFKCombatLooter extends AFKCombatHelper {
 
     Point item_box;
+    public Color npc_rgb = new Color(0 , 255, 255);
+    public Color item_rgb = new Color(255, 150, 255);
+    public int failed_loot_attempts = 0;
 
     public AFKCombatLooter(Client client, MouseController mouse, ReentrantLock lock) {
         super(client, mouse, lock);
@@ -24,7 +27,7 @@ public class AFKCombatLooter extends AFKCombatHelper {
 
     private Point get_text_y(BufferedImage image, Color target_rgb, Point start, int limit, int increment){
         Point curr_y = start;
-        curr_y = new Point(curr_y.getX() + increment, curr_y.getY());
+        curr_y = new Point(curr_y.getX(), curr_y.getY() + increment);
         int counter = 0;
         while (counter < limit){
             if (!target_rgb.equals(get_color(curr_y, image))){
@@ -92,8 +95,6 @@ public class AFKCombatLooter extends AFKCombatHelper {
     }
 
     public Action get_next_action(){
-        Color npc_rgb = new Color(0 , 255, 255);
-        Color item_rgb = new Color(255, 150, 255);
 
         // Target has been found, check that it has not moved before attacking
         Action next_action = action_queue.poll();
@@ -102,6 +103,7 @@ public class AFKCombatLooter extends AFKCombatHelper {
             Point target = action.get_random_point_in_bounds();
             if (npc_rgb.equals(ImageParser.get_color(target))){
                 print(client.get_name() + ": Attacking target");
+                failed_loot_attempts = 0;
                 return next_action;
             }
         }
@@ -114,6 +116,8 @@ public class AFKCombatLooter extends AFKCombatHelper {
             // Find the bounds to pick up the item
             Point[] item_box_bounds = find_item_text_bounds(image, item_rgb);
             if (item_box_bounds != null) {
+                failed_loot_attempts = 0;
+
                 // Scale the waiting time based on the run distance
                 Rectangle dimensions = client.get_dimensions();
                 Point center = new Point(dimensions.getX() + dimensions.width / 2d, dimensions.getY() + dimensions.height / 2d);
@@ -124,11 +128,12 @@ public class AFKCombatLooter extends AFKCombatHelper {
 
                 return new MouseLeftClickAction(mouse, item_box_bounds, wait_time, "Loot Item");
             }
+            failed_loot_attempts += 1;
         }
 
         // Check for items to loot
-        Point target = find_target(item_rgb, image, 0.75, 15);
-        if (target != null){
+        Point target = find_target(item_rgb, image, 1, 15);
+        if (target != null && failed_loot_attempts < 3){
             System.out.println(client.get_name() + ": Found item to loot");
             Point item_text_center = find_text_center(item_rgb, image, target);
             Point item_center = new Point(item_text_center.getX(), item_text_center.getY() + 10);
