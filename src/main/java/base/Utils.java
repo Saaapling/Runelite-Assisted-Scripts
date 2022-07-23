@@ -1,5 +1,7 @@
 package base;
 
+import actions.Point;
+
 public class Utils {
 
     public static void print(Object x){
@@ -12,6 +14,12 @@ public class Utils {
                 System.out.print(ints[j] + ",");
             }
             print("");
+        }
+    }
+
+    public static void print_points(Point[] arr){
+        for (Point x : arr){
+            print(x);
         }
     }
 

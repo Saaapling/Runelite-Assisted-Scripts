@@ -44,9 +44,9 @@ public class BlastFurnaceSmelter extends InteractionTask {
 
         // Movement Actions
         Point[] belt_bounds = {new Point(789, 243), new Point(818, 239), new Point(820, 288), new Point(798, 279)};
-        actions.put("Move to Belt", new MouseLeftClickAction(mouse, belt_bounds, 5750, "Move to Belt"));
+        actions.put("Move to Belt", new MouseLeftClickAction(mouse, belt_bounds, 6000, "Move to Belt"));
         actions.put("Mouseover Coal Bag", new MouseMoveAction(mouse, Offsets.get_inventory_coordinate(1,1), 15, 100, "Mouseover Coal Bag"));
-        actions.put("Move to Collector", new MouseLeftClickAction(mouse, new Point(880, 660), 12, 4000, "Move to Collector"));
+        actions.put("Move to Collector", new MouseLeftClickAction(mouse, new Point(880, 660), 12, 3750, "Move to Collector"));
         Point[] bank_bounds = {new Point(1240, 801), new Point(1274, 805), new Point(1279, 824), new Point(1244, 823)};
         actions.put("Move to Bank", new MouseLeftClickAction(mouse, bank_bounds, 5250, "Move to Bank"));
 
@@ -61,7 +61,7 @@ public class BlastFurnaceSmelter extends InteractionTask {
 
     public void populate_action_queue(){
         // Bank Actions
-        action_queue.add(actions.get("Withdraw Coal (Insurance)"));
+//        action_queue.add(actions.get("Withdraw Coal (Insurance)"));
         action_queue.add(actions.get("Withdraw Coal"));
         action_queue.add(actions.get("Close Bank"));
         action_queue.add(actions.get("Fill Coal Bag"));
@@ -103,8 +103,8 @@ public class BlastFurnaceSmelter extends InteractionTask {
                 // Drink a stamina potion
                 if (client.get_stamina() < 40){
                     extra_steps = 5;
-                    action_queue.addFirst(actions.get("Deposit Items"));
                     action_queue.addFirst(actions.get("Withdraw Coal"));
+                    action_queue.addFirst(actions.get("Deposit Items"));
                     action_queue.addFirst(actions.get("Open Bank"));
                     action_queue.addFirst(actions.get("Drink Stamina Potion"));
                     action_queue.addFirst(actions.get("Close Bank"));
