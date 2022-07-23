@@ -31,3 +31,5 @@ bin/
 ### Misc ###
 **/sample_images/
 **/Test_*
+
+.class
