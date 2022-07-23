@@ -44,7 +44,7 @@ public class BlastFurnaceSmelter extends InteractionTask {
 
         // Movement Actions
         Point[] belt_bounds = {new Point(789, 243), new Point(818, 239), new Point(820, 288), new Point(798, 279)};
-        actions.put("Move to Belt", new MouseLeftClickAction(mouse, belt_bounds, 6000, "Move to Belt"));
+        actions.put("Move to Belt", new MouseLeftClickAction(mouse, belt_bounds, 6250, "Move to Belt"));
         actions.put("Mouseover Coal Bag", new MouseMoveAction(mouse, Offsets.get_inventory_coordinate(1,1), 15, 100, "Mouseover Coal Bag"));
         actions.put("Move to Collector", new MouseLeftClickAction(mouse, new Point(880, 660), 12, 3750, "Move to Collector"));
         Point[] bank_bounds = {new Point(1240, 801), new Point(1274, 805), new Point(1279, 824), new Point(1244, 823)};
@@ -75,7 +75,7 @@ public class BlastFurnaceSmelter extends InteractionTask {
         action_queue.add(actions.get("Empty Coal Bag"));
         action_queue.add(actions.get("Belt Deposit (Adjacent)"));
         action_queue.add(actions.get("Move to Collector"));
-        action_queue.add(actions.get("Bar Collection (Adjacent)"));
+//        action_queue.add(actions.get("Bar Collection (Adjacent)"));
         action_queue.add(actions.get("Collect Bars"));
         action_queue.add(actions.get("Move to Bank"));
 

@@ -32,4 +32,4 @@ bin/
 **/sample_images/
 **/Test_*
 
-.class
+**/*.class
