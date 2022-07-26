@@ -8,7 +8,9 @@ import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import image_parsing.Offsets;
+import tasks.AFKCombatHelper.AFKCombatLooter;
 import tasks.AFKCombatHelper.AFKCombatManager;
+import tasks.AFKCombatHelper.AFKKrackenHelper;
 import tasks.BlastFurnace.BlastFurnaceSmelter;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
 import tasks.Task;
@@ -19,8 +21,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static base.Utils.print;
 
 public class Controller implements NativeKeyListener {
 
@@ -35,7 +35,7 @@ public class Controller implements NativeKeyListener {
 
         for (DesktopWindow desktopWindow: windows){
             if (desktopWindow.getTitle().contains("RuneLite")) {
-                print("Application Found: " + desktopWindow.getTitle());
+                Utils.print("Application Found: " + desktopWindow.getTitle());
 
                 // Get HWND and display window
                 HWND hWnd = desktopWindow.getHWND();
@@ -46,7 +46,7 @@ public class Controller implements NativeKeyListener {
         }
 
         for (Client x: clients.values()){
-            print(x.get_dimensions());
+            Utils.print(x.get_dimensions());
         }
     }
 
@@ -55,10 +55,10 @@ public class Controller implements NativeKeyListener {
             int i = 0;
             for (Client client : clients.values()){
                 int[] status = client.update_status();
-                print("base.Client " + i + ": ");
-                print("Health: " + status[0]);
-                print("Prayer: " + status[1]);
-                print("Stamina: " + status[2]);
+                Utils.print("base.Client " + i + ": ");
+                Utils.print("Health: " + status[0]);
+                Utils.print("Prayer: " + status[1]);
+                Utils.print("Stamina: " + status[2]);
                 i += 1;
             }
 
@@ -117,6 +117,7 @@ public class Controller implements NativeKeyListener {
 
 //        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
 //        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
+//        start_clients(AFKKrackenHelper.class, parameter_class, parameters);
 //        start_clients(AFKCombatLooter.class, parameter_class, parameters);
 //        start_clients(AFKCombatManager.class, parameter_class, parameters);
 

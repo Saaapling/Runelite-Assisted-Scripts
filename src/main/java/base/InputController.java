@@ -35,7 +35,7 @@ public class InputController {
 
     public void shift_click() throws  InterruptedException {
         press_key(KeyEvent.VK_SHIFT);
-        Thread.sleep(DefaultSleepValues.random_time_between_clicks());
+        Thread.sleep(DefaultSleepValues.random_time_between_clicks() * 2L);
 
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         Thread.sleep(DefaultSleepValues.random_time_between_clicks());
