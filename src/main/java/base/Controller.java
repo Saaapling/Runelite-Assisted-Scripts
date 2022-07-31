@@ -11,6 +11,7 @@ import image_parsing.Offsets;
 import tasks.AFKCombatHelper.AFKCombatLooter;
 import tasks.AFKCombatHelper.AFKCombatManager;
 import tasks.AFKCombatHelper.AFKKrackenHelper;
+import tasks.BlastFurnace.BlastFurnaceMithril;
 import tasks.BlastFurnace.BlastFurnaceSmelter;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
 import tasks.Task;
@@ -115,15 +116,16 @@ public class Controller implements NativeKeyListener {
 //        ArrayList<Object> parameters = new ArrayList<>(List.of(45000));
 //        start_clients(AFKTimer.class, parameter_class, parameters);
 
-//        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
-//        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
+        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
+        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
 //        start_clients(AFKKrackenHelper.class, parameter_class, parameters);
 //        start_clients(AFKCombatLooter.class, parameter_class, parameters);
 //        start_clients(AFKCombatManager.class, parameter_class, parameters);
 
-        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
-        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
-        start_clients(BlastFurnaceSmelter.class, parameter_class, parameters);
+//        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
+//        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
+//        start_clients(BlastFurnaceSmelter.class, parameter_class, parameters);
+        start_clients(BlastFurnaceMithril.class, parameter_class, parameters);
     }
 
     // Customize this method to set the task(s) as needed

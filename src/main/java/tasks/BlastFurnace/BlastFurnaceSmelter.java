@@ -25,13 +25,13 @@ public class BlastFurnaceSmelter extends InteractionTask {
         super(client, mouse, lock);
 
         populate_actions();
-        populate_action_queue();
     }
 
     private void populate_actions(){
         // Bank Actions
         actions.put("Withdraw Coal Bag", new WithdrawAction(mouse, 2, 7, 500, "Withdraw Coal Bag"));
         actions.put("Withdraw Iron Ore", new WithdrawAction(mouse, 2, 1, 500, "Withdraw Iron Ore"));
+        actions.put("Withdraw Mithril Ore", new WithdrawAction(mouse, 2, 3, 500, "Withdraw Mithril Ore"));
         actions.put("Withdraw Coal", new WithdrawAction(mouse, 2, 2, 500, "Withdraw Coal"));
         actions.put("Withdraw Coal (Insurance)", new WithdrawAction(mouse, 2, 2, 100, "Withdraw Coal"));
         actions.put("Withdraw Stamina Potion", new WithdrawAction(mouse, 12, 1, 500, "Withdraw Coal"));
@@ -49,6 +49,8 @@ public class BlastFurnaceSmelter extends InteractionTask {
         actions.put("Move to Collector", new MouseLeftClickAction(mouse, new Point(885, 660), 12, 3750, "Move to Collector"));
         Point[] bank_bounds = {new Point(1240, 801), new Point(1274, 805), new Point(1279, 824), new Point(1244, 823)};
         actions.put("Move to Bank", new MouseLeftClickAction(mouse, bank_bounds, 5250, "Move to Bank"));
+        Point[] bank_bounds_2 = {new Point(1153, 910), new Point(1180, 910), new Point(1194, 946), new Point(1164, 950)};
+        actions.put("Move to Bank (Conveyor)", new MouseLeftClickAction(mouse, bank_bounds_2, 6750, "Move to Bank (Conveyor)"));
 
         // Misc Actions
         actions.put("Close Bank", new KeyboardAction(mouse, "escape", "Close Bank"));
@@ -152,7 +154,8 @@ public class BlastFurnaceSmelter extends InteractionTask {
     }
 
     public void run() {
-        System.out.println("Starting Task: Combat Helper (" + client.get_name() + ")");
+        populate_action_queue();
+        System.out.println("Starting Task: Blast Furnace Smelter (" + client.get_name() + ")");
 
         fetch_lock();
         try {
