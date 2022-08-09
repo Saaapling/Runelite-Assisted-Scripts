@@ -14,6 +14,7 @@ import tasks.AFKCombatHelper.AFKKrackenHelper;
 import tasks.BlastFurnace.BlastFurnaceMithril;
 import tasks.BlastFurnace.BlastFurnaceSmelter;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
+import tasks.RedSalamanderHunter.RedSalamanderHunter;
 import tasks.Task;
 
 import java.io.IOException;
@@ -125,7 +126,10 @@ public class Controller implements NativeKeyListener {
 //        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
 //        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
 //        start_clients(BlastFurnaceSmelter.class, parameter_class, parameters);
-        start_clients(BlastFurnaceMithril.class, parameter_class, parameters);
+//        start_clients(BlastFurnaceMithril.class, parameter_class, parameters);
+
+        start_clients(RedSalamanderHunter.class, parameter_class, parameters);
+
     }
 
     // Customize this method to set the task(s) as needed

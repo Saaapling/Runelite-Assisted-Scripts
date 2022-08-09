@@ -194,7 +194,7 @@ public class ScreenshotManager {
             }
         }
 
-        screenshot_inventory_item(path, 1, 2);
+        screenshot_inventory_item(path, 1, 1);
 
         user32.ShowWindow(hWnd, User32.SW_SHOWMINIMIZED);
     }

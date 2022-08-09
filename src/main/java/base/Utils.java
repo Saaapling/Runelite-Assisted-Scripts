@@ -8,10 +8,10 @@ public class Utils {
         System.out.println(x);
     }
 
-    public static void print_arr(int[][] arr){
-        for (int[] ints : arr) {
+    public static <T> void print_arr(T[][] arr){
+        for (T[] items : arr) {
             for (int j = 0; j < arr[0].length; j++) {
-                System.out.print(ints[j] + ",");
+                System.out.print(items[j] + ",");
             }
             print("");
         }
