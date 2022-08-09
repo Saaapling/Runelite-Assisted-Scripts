@@ -106,6 +106,19 @@ public class BlastFurnaceMithril extends BlastFurnaceSmelter{
         try {
             String base_path = ".\\src\\main\\java\\tasks\\BlastFurnace\\InventoryImages\\";
 
+            // Check whether the coal was taken out of the bag
+            if (next_action.get_name().equals("Belt Deposit (Adjacent)")) {
+                BufferedImage base_inventory_slot = ImageIO.read(new File(base_path + "1_2_Empty.png"));
+                BufferedImage inventory_slot = get_inventory_image(1, 2);
+
+                if (compare_images(base_inventory_slot, inventory_slot)) {
+                    failsafe_counter += 1;
+                    extra_steps += 1;
+                    action_queue.addFirst(actions.get(next_action.get_name()));
+                    return actions.get("Empty Coal Bag");
+                }
+            }
+
             // Check whether the ore was successfully deposited onto the conveyor belt
             if (next_action.get_name().equals("Empty Coal Bag") || next_action.get_name().equals("Move to Collector")) {
                 BufferedImage base_inventory_slot = ImageIO.read(new File(base_path + "1_2_Empty.png"));
