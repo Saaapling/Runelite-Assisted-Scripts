@@ -17,7 +17,7 @@ import static image_parsing.ImageParser.*;
 
 public class RedSalamanderHunter extends InteractionTask {
 
-    int failsafe_counter = 0;
+    int failsafe_counter = -4;
     boolean caught = false;
 
     public RedSalamanderHunter(Client client, InputController mouse, ReentrantLock lock) {
@@ -28,54 +28,44 @@ public class RedSalamanderHunter extends InteractionTask {
 
     private void populate_actions(){
         // Movement Actions
-        Point[] trap1_move_bounds = {new Point(1260, 984), new Point(1284, 985), new Point(1286, 1001), new Point( 1260, 1001)};
-        actions.put("Move to Trap 1", new MouseLeftClickAction(mouse, trap1_move_bounds, 5000, "Move to Trap 1"));
-        Point[] trap1_step_bounds = {new Point(935, 600), new Point(960, 600), new Point(960, 620), new Point(935, 620)};
-        actions.put("Step to Trap 1", new MouseLeftClickAction(mouse, trap1_step_bounds, 1000, "Step to Trap 1"));
+        actions.put("Move to Trap 1", new MouseLeftClickAction(mouse, new Point(1191, 878), 8, 5000, "Move to Trap 1"));
+        actions.put("Step to Trap 1", new MouseLeftClickAction(mouse, new Point(945, 580), 15, 1800, "Step to Trap 1"));
 
-        Point[] trap2_move_bounds = {new Point(698, 212), new Point(720, 212), new Point(719, 230), new Point(696, 227)};
-        actions.put("Move to Trap 2", new MouseLeftClickAction(mouse, trap2_move_bounds, 4300, "Move to Trap 2"));
-        Point[] trap2_step_bounds = {new Point(910, 458), new Point(955, 458), new Point(955, 498), new Point(910, 498)};
-        actions.put("Step to Trap 2", new MouseLeftClickAction(mouse, trap2_step_bounds, 1000, "Step to Trap 2"));
+        actions.put("Move to Trap 2", new MouseLeftClickAction(mouse, new Point(716, 242), 8, 4300, "Move to Trap 2"));
+        actions.put("Step to Trap 2", new MouseLeftClickAction(mouse, new Point(935, 465), 15, 1800, "Step to Trap 2"));
 
-        Point[] trap3_move_bounds = {new Point(823, 497), new Point(837, 496), new Point(837, 507), new Point(822, 502)};
-        actions.put("Move to Trap 3", new MouseLeftClickAction(mouse, trap3_move_bounds, 3000, "Move to Trap 3"));
-        Point[] trap3_step_bounds = {new Point(870, 467), new Point(907, 467), new Point(907, 480), new Point(870, 479)};
-        actions.put("Step to Trap 3", new MouseLeftClickAction(mouse, trap3_step_bounds, 2000, "Step to Trap 3"));
+        actions.put("Move to Trap 3", new MouseLeftClickAction(mouse, new Point(834, 481), 8, 3000, "Move to Trap 3"));
+        actions.put("Step to Trap 3", new MouseLeftClickAction(mouse, new Point(880, 465), 15, 1800, "Step to Trap 3"));
 
-        Point[] trap4_move_bounds = {new Point(1117, 428), new Point(1137, 429), new Point(1140, 452), new Point(1119, 454)};
-        actions.put("Move to Trap 4", new MouseLeftClickAction(mouse, trap4_move_bounds, 3500, "Move to Trap 4"));
-        Point[] trap4_step_bounds = {new Point(1000, 495), new Point(1030, 495), new Point(1030, 525), new Point(1000, 525)};
-        actions.put("Step to Trap 4", new MouseLeftClickAction(mouse, trap4_step_bounds, 1000, "Step to Trap 4"));
+        actions.put("Move to Trap 4", new MouseLeftClickAction(mouse, new Point(1106, 464), 8, 3500, "Move to Trap 4"));
+        actions.put("Step to Trap 4", new MouseLeftClickAction(mouse, new Point(990, 520), 15, 1800, "Step to Trap 4"));
 
         // Set Trap Actionss
-        Point[] trap1_set_bounds = {new Point(942, 559), new Point(960, 561), new Point(959, 597), new Point(941, 601)};
-        actions.put("Set Trap 1", new MouseLeftClickAction(mouse, trap1_set_bounds, 3200, "Set Trap 1"));
-        Point[] trap2_set_bounds = {new Point(992, 492), new Point(1005, 494), new Point(1005, 536), new Point(991, 531)};
-        actions.put("Set Trap 2", new MouseLeftClickAction(mouse, trap2_set_bounds, 3200, "Set Trap 2"));
-        Point[] trap3_set_bounds = {new Point(926, 548), new Point(943, 551), new Point(945, 580), new Point(927, 578)};
-        actions.put("Set Trap 3", new MouseLeftClickAction(mouse, trap3_set_bounds, 3200, "Set Trap 3"));
-        Point[] trap4_set_bounds = {new Point(934, 432), new Point(959, 430), new Point(954, 474), new Point(941, 474)};
-        actions.put("Set Trap 4", new MouseLeftClickAction(mouse, trap4_set_bounds, 8000, "Set Trap 4"));
+        actions.put("Set Trap 1", new MouseLeftClickAction(mouse, new Point(950, 593), 7,3200, "Set Trap 1"));
+        actions.put("Set Trap 2", new MouseLeftClickAction(mouse, new Point(995, 518), 7, 3200, "Set Trap 2"));
+        actions.put("Set Trap 3", new MouseLeftClickAction(mouse, new Point(936, 580), 7, 3200, "Set Trap 3"));
+        actions.put("Set Trap 4", new MouseLeftClickAction(mouse, new Point(948, 460), 7, 20200, "Set Trap 4"));
 
         // Pick up Bounds
-        Point[] trap1_item_bounds = {new Point(933, 530), new Point(959, 529), new Point(961, 542), new Point(933, 540)};
-        actions.put("Pick up Item 1", new MouseLeftClickAction(mouse, trap1_item_bounds, 500, "Pick up Item 1"));
-        Point[] trap2_item_bounds = {new Point(921, 515), new Point(949, 516), new Point(947, 542), new Point(919, 539)};
-        actions.put("Pick up Item 2", new MouseLeftClickAction(mouse, trap2_item_bounds, 500, "Pick up Item 2"));
-        Point[] trap3_item_bounds = {new Point(921, 514), new Point(945, 514), new Point(952, 527), new Point(920, 530)};
-        actions.put("Pick up Item 3", new MouseLeftClickAction(mouse, trap3_item_bounds, 500, "Pick up Item 3"));
-        Point[] trap4_item_bounds = {new Point(937, 515), new Point(964, 517), new Point(964, 541), new Point(934, 541)};
-        actions.put("Pick up Item 4", new MouseLeftClickAction(mouse, trap4_item_bounds, 500, "Pick up Item 4"));
+        actions.put("Pick up Item 1", new MouseLeftClickAction(mouse, new Point(948, 530), 5, 500, "Pick up Item 1"));
+        actions.put("Pick up Item 2", new MouseLeftClickAction(mouse, new Point(946, 534), 5, 500, "Pick up Item 2"));
+        actions.put("Pick up Item 3", new MouseLeftClickAction(mouse, new Point(936, 532), 5, 500, "Pick up Item 3"));
+        actions.put("Pick up Item 4", new MouseLeftClickAction(mouse, new Point(936, 522), 5, 500, "Pick up Item 4"));
 
         // Evaluation Actions
         actions.put("Evaluate Action 1", new DefaultAction(500, "Evaluate Action 1"));
         actions.put("Evaluate Action 2", new DefaultAction(500, "Evaluate Action 2"));
         actions.put("Evaluate Action 3", new DefaultAction(500, "Evaluate Action 3"));
         actions.put("Evaluate Action 4", new DefaultAction(500, "Evaluate Action 4"));
+
+        // Reset Camera
+        actions.put("Reset Camera", new KeyboardAction(mouse, "ctrl", "Reset Camera"));
     }
 
     public void populate_action_queue(){
+        // Reset Camera Zoom
+        action_queue.add(actions.get("Reset Camera"));
+
         // Movement Actions
         action_queue.add(actions.get("Move to Trap 1"));
         action_queue.add(actions.get("Evaluate Action 1"));
@@ -126,7 +116,7 @@ public class RedSalamanderHunter extends InteractionTask {
             }
         }
 
-        if (action_name.startsWith("Set") || action_name.startsWith("Move")){
+        if (action_name.startsWith("Set") || action_name.startsWith("Move") || action_name.startsWith("Reset")){
             action_queue.addLast(next_action);
         }
 
@@ -142,7 +132,7 @@ public class RedSalamanderHunter extends InteractionTask {
         try {
             focus_client();
             Action next_action = get_next_action();
-            while (failsafe_counter < 12){
+            while (failsafe_counter < 8){
                 System.out.println("Executing Action (" + client.get_name() + "): " + next_action.get_name());
                 next_action.execute();
 

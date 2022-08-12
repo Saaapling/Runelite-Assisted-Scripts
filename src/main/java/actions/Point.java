@@ -87,7 +87,30 @@ public class Point {
         };
     }
 
-        //Return a random point within the bounds
+    public static boolean check_bounds(Point[] bounds, Point point){
+        double max_x = Integer.MIN_VALUE;
+        double max_y = Integer.MIN_VALUE;
+        double min_x = Integer.MAX_VALUE;
+        double min_y = Integer.MAX_VALUE;
+
+        for (Point x : bounds){
+            if (x.getX() > max_x)
+                max_x = x.getX();
+            if (x.getX() < min_x)
+                min_x = x.getX();
+            if (x.getY() > max_y)
+                max_y = x.getY();
+            if (x.getY() < min_y)
+                min_y = x.getY();
+        }
+
+        if (point.getX() < min_x || point.getX() > max_x)
+            return false;
+
+        return !(point.getY() < min_y) && !(point.getY() > max_y);
+    }
+
+    //Return a random point within the bounds
     public static Point get_random_point(Point[] bounds) {
         Point[] triangle_a = {bounds[1], bounds[0], bounds[2]};
         Point[] triangle_b = {bounds[3], bounds[0], bounds[2]};
@@ -120,6 +143,11 @@ public class Point {
 
         Point rand_point = target[0].add(vector_a.scale(rand_scales[0]).add(vector_b.scale(rand_scales[1])));
 //        System.out.println("Random point generated: " + rand_point);
+
+        if (!check_bounds(bounds, rand_point)){
+            System.out.println("Something went wrong...");
+            return get_random_point(bounds);
+        }
 
         return rand_point;
     }

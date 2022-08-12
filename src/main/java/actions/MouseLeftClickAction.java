@@ -15,7 +15,8 @@ public class MouseLeftClickAction extends MouseAction{
     }
 
     public void execute() throws InterruptedException {
-        mouse.move(Point.get_random_point(bounds));
+        Point rand_point = Point.get_random_point(bounds);
+        mouse.move(rand_point);
         mouse.left_click();
     }
 

@@ -7,7 +7,7 @@ public class DefaultSleepValues {
     }
 
     static int random_time_between_move_and_click(){
-        return (int) (50 + Math.random() * 15);
+        return (int) (65 + Math.random() * 15);
     }
 
     static int random_time_between_key_strokes(){

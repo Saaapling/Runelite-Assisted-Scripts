@@ -27,6 +27,9 @@ public class KeyboardAction extends Action{
             case "alt":
                 this.key = KeyEvent.VK_ALT;
                 break;
+            case  "ctrl":
+                this.key = KeyEvent.VK_CONTROL;
+                break;
             default: //Defaults to escape
                 this.key = KeyEvent.VK_ESCAPE;
         }
