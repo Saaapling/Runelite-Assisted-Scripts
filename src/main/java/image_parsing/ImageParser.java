@@ -353,6 +353,17 @@ public class ImageParser {
         return inventory_images;
     }
 
+    public static BufferedImage get_inventory_slot(int row, int col) throws IOException {
+        BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        Point item_center = Offsets.get_inventory_coordinate(row, col);
+        Point item_start = item_center.subtract(new Point(inventory_item_size, inventory_item_size));
+        BufferedImage sub_image = screenShot.getSubimage((int) item_start.getX(), (int) item_start.getY(),
+                inventory_item_size * 2, inventory_item_size * 2);
+        ImageIO.write(sub_image, "PNG", new File(".\\src\\main\\sample_images\\current.png"));
+        sub_image = ImageIO.read(new File(".\\src\\main\\sample_images\\current.png"));
+        return sub_image;
+    }
+
     public static Color get_color(Point coordinate){
         return robot.getPixelColor((int) coordinate.getX(), (int) coordinate.getY());
     }
@@ -364,6 +375,30 @@ public class ImageParser {
         int b = (pixel_int)&0xFF;
 
         return new Color(r, g, b);
+    }
+
+    public static int[] get_color_numeric(Point coordinate, BufferedImage image) {
+        int pixel_int = image.getRGB((int) coordinate.getX(), (int) coordinate.getY());
+        int r = (pixel_int>>16)&0xFF;
+        int g = (pixel_int>>8)&0xFF;
+        int b = (pixel_int)&0xFF;
+
+        return new int[]{r,g,b};
+    }
+
+    public static boolean compare_numeric_colors(int[] a, int[] b){
+        // Default threshold parameter = 1
+        if (a.length != b.length){
+            return false;
+        }
+
+        for (int i = 0; i < a.length; i++){
+            if (a[i] != b[i]){
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static void print_color(Color x){

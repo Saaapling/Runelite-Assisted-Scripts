@@ -21,24 +21,39 @@ public class AFKCombatManager extends AFKCombatLooter{
     public AFKCombatManager(Client client, InputController mouse, ReentrantLock lock) throws IOException {
         super(client, mouse, lock);
         client.update_inventory();
+        actions.put("Select Magic Tab", new KeyboardAction(mouse, "F2", "Select Magic Tab"));
+        actions.put("Select Inventory Tab",  new KeyboardAction(mouse, "F1", "Select Inventory Tab", 1500));
+        actions.put("Select High Alchemy", new MouseLeftClickAction(mouse, new Point(1854,862), 5,500, "Select High Alchemy"));
     }
 
     public Action get_next_action(){
-
-        // Target has been found, check that it has not moved before attacking
         Action next_action = action_queue.poll();
-        if (next_action != null && next_action.get_name().equals("Attack monster")){
-            MouseAction action = (MouseAction) next_action;
-            actions.Point target = action.get_random_point_in_bounds();
-            if (npc_rgb.equals(ImageParser.get_color(target))){
-                user_initiated_combat = true;
-                failed_loot_attempts = 0;
-                return next_action;
-            }
+
+        // Cast/Check for Alchemy targets
+        if (next_action != null && (next_action.get_name().contains("Alchemy") || next_action.get_name().contains("Tab"))){
+            return next_action;
         }
 
-        // Take a screenshot (faster when computing multiple (hundreds) of points)
-        BufferedImage image = ImageParser.get_screenshot();
+        Point alch_item = client.check_alchemy();
+        Point temp;
+        while (alch_item != null){
+            temp = alch_item;
+            try {
+                client.update_inventory_slot((int) alch_item.getX(), (int) alch_item.getY());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            alch_item = client.check_alchemy();
+            if (temp.equals(alch_item)){
+                break;
+            }
+        }
+        if (alch_item != null){
+            action_queue.addFirst(actions.get("Select Inventory Tab"));
+            action_queue.addFirst(new InventoryAction(mouse, (int) alch_item.getX(), (int) alch_item.getY(), 500, "Cast High Alchemy"));
+            action_queue.addFirst(actions.get("Select High Alchemy"));
+            return actions.get("Select Magic Tab");
+        }
 
         // Check player status (health, prayer, buffs)
         try {
@@ -70,6 +85,20 @@ public class AFKCombatManager extends AFKCombatLooter{
             }
         } catch (IOException ignored) { }
 
+        // Target has been found, check that it has not moved before attacking
+        if (next_action != null && next_action.get_name().equals("Attack monster")){
+            MouseAction action = (MouseAction) next_action;
+            actions.Point target = action.get_random_point_in_bounds();
+            if (npc_rgb.equals(ImageParser.get_color(target))){
+                user_initiated_combat = true;
+                failed_loot_attempts = 0;
+                return next_action;
+            }
+        }
+
+        // Take a screenshot (faster when computing multiple (hundreds) of points)
+        BufferedImage image = ImageParser.get_screenshot();
+
         // Item has been found (and right-clicked). Pick up the item
         if (next_action != null && next_action.get_name().equals("Item Search")){
             // Find the bounds to pick up the item
@@ -84,18 +113,20 @@ public class AFKCombatManager extends AFKCombatLooter{
                         Math.sqrt(Math.pow(center.getX(), 2) + Math.pow(center.getY(), 2));
                 int wait_time = Math.max(1500, (int) (20000 * scale));
 
-                client.loot_item();
                 return new MouseLeftClickAction(mouse, item_box_bounds, wait_time, "Loot Item");
             }
             failed_loot_attempts += 1;
         }
 
-        // Check whether the player is already in combat
         // If the user is in combat, but not by its own volition (auto-retaliate, go loot), otherwise, wait
+        boolean in_combat = false;
         if (get_combat_status()) {
             if (user_initiated_combat)
                 return actions.get("Default Wait");
-        }else{
+            in_combat = true;
+        } else if (failsafe_counter > 3) {
+            return null;
+        } else{
             user_initiated_combat = false;
         }
 
@@ -122,7 +153,7 @@ public class AFKCombatManager extends AFKCombatLooter{
         }
 
         // No ground items to loot, if auto-retaliate already found a target, go ahead and fight it
-        if (get_combat_status()) {
+        if (in_combat) {
             return actions.get("Default Wait");
         }
 
@@ -140,4 +171,46 @@ public class AFKCombatManager extends AFKCombatLooter{
         action_queue.add(new MouseLeftClickAction(mouse, target_center, 0, 3000, "Attack monster"));
         return new MouseMoveAction(mouse, target_center, 30, 0);
     }
+
+    public void run() {
+        System.out.println("Starting Task: Combat Helper (" + client.get_name() + ")");
+
+        fetch_lock();
+        try {
+            focus_client();
+            Action next_action = get_next_action();
+            while (failsafe_counter < 3){
+                if (!next_action.get_name().contains("Wait")){
+                    System.out.println(client.get_name() + ": " + next_action.get_name());
+                }
+                next_action.execute();
+
+                release_lock();
+                int wait_time = next_action.get_wait_time();
+                int rand_sleep = get_sleep_time(wait_time);
+                if (rand_sleep > 0) {
+                    System.out.println("Sleeping (" + client.get_name() + "): " + rand_sleep + "ms");
+                    Thread.sleep(rand_sleep);
+                }
+
+                fetch_lock();
+                focus_client();
+
+                // Post Execution items (Updating Inventory, etc.)
+                if (next_action.get_name().contains("Loot")){
+                    client.loot_item();
+                }
+
+                next_action = get_next_action();
+            }
+        }catch (Exception e){
+            print(e.fillInStackTrace());
+            release_lock();
+        }
+
+        System.out.println("Task finished: " + client.get_name());
+        System.exit(0);
+    }
+
+
 }

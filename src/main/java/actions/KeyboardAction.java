@@ -20,21 +20,34 @@ public class KeyboardAction extends Action{
     public KeyboardAction(InputController keyboard, String key, String name){
         this.keyboard = keyboard;
         this.name = name;
-        switch (key.toLowerCase()) {
-            case "shift":
-                this.key = KeyEvent.VK_SHIFT;
-                break;
-            case "alt":
-                this.key = KeyEvent.VK_ALT;
-                break;
-            case  "ctrl":
-                this.key = KeyEvent.VK_CONTROL;
-                break;
-            default: //Defaults to escape
-                this.key = KeyEvent.VK_ESCAPE;
-        }
+        set_key(key);
     }
 
+    public KeyboardAction(InputController keyboard, int key, String name, int wait_time) {
+        this.keyboard = keyboard;
+        this.name = name;
+        this.key = key;
+        this.wait_time = wait_time;
+    }
+
+    public KeyboardAction(InputController keyboard, String key, String name, int wait_time){
+        this.keyboard = keyboard;
+        this.name = name;
+        set_key(key);
+        this.wait_time = wait_time;
+    }
+
+    private void set_key(String key){
+        switch (key.toLowerCase()) {
+            case "shift" -> this.key = KeyEvent.VK_SHIFT;
+            case "alt" -> this.key = KeyEvent.VK_ALT;
+            case "ctrl" -> this.key = KeyEvent.VK_CONTROL;
+            case "f1" -> this.key = KeyEvent.VK_F1;
+            case "f2" -> this.key = KeyEvent.VK_F2;
+            default -> //Defaults to escape
+                    this.key = KeyEvent.VK_ESCAPE;
+        }
+    }
     public void set_action(String action){
         this.action = action;
     }

@@ -34,7 +34,7 @@ public class Player {
         buff_durations.put("SuperCombat", 10);
         buff_durations.put("Ranging", 6);
         buff_durations.put("Antifire", 12);
-        buff_durations.put("SuperAntifire", 6);
+        buff_durations.put("SuperAntifire", 5);
         buff_durations.put("Antipoison", 6);
     }
 
@@ -66,48 +66,68 @@ public class Player {
         return counter / (data_a.getSize() / 3.d) > 0.99;
     }
 
+    void update_inventory_slot(BufferedImage base_image, int row, int col) throws IOException {
+        String potion_directory = ".\\src\\main\\java\\base\\InventoryImages\\";
+        String alchemy_directory = "./src/main/java/tasks/AFKCombatHelper/AlchemyTargets/";
+
+        inventory[row-1][col-1] = "Item";
+        inventory_stack[row-1][col-1] = 1;
+
+        if (check_empty(base_image)){
+            inventory[row-1][col-1] = "Empty";
+            inventory_stack[row-1][col-1] = 0;
+            return;
+        }
+
+        // Check for potions inventory
+        DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(potion_directory));
+        for (Path path : stream) {
+            BufferedImage compare_image = ImageIO.read(new File(path.toString()));
+            double similarity = image_similarity(base_image, compare_image);
+
+            if (similarity > 0.8){
+                String regex = "([a-zA-Z]+)_?(\\d)?.png";
+                Matcher m = Pattern.compile(regex).matcher(path.getFileName().toString());
+
+                if (!m.find())
+                    continue;
+
+                String item = m.group(1);
+                inventory[row-1][col-1] = item;
+                if (m.group(2) != null){
+                    inventory_stack[row-1][col-1] = Integer.parseInt(m.group(2));
+                }else {
+                    inventory_stack[row-1][col-1] = 1;
+                }
+
+                if (buff_durations.containsKey(item) && !rebuff_timers.containsKey(item)){
+                    LocalDateTime dateTime = LocalDateTime.now();
+                    rebuff_timers.put(item, dateTime);
+                }
+
+                return;
+            }
+        }
+
+        // Check for alchemy targets
+        stream = Files.newDirectoryStream(Paths.get(alchemy_directory));
+        for (Path path : stream) {
+            BufferedImage compare_image = ImageIO.read(new File(path.toString()));
+            double similarity = image_similarity(base_image, compare_image);
+
+            if (similarity > 0.8){
+                inventory[row-1][col-1] = "Alch";
+                inventory_stack[row-1][col-1] = 1;
+                return;
+            }
+        }
+    }
+
     void update_inventory(BufferedImage[][] inventory_images) throws IOException {
-        String directory = ".\\src\\main\\java\\base\\InventoryImages\\";
         for (int row = 1; row <= 7; row++) {
             for (int col = 1; col <= 4; col++) {
-                inventory[row-1][col-1] = "Item";
-                inventory_stack[row-1][col-1] = 1;
                 BufferedImage base_image = inventory_images[row-1][col-1];
-
-                if (check_empty(base_image)){
-                    inventory[row-1][col-1] = "Empty";
-                    inventory_stack[row-1][col-1] = 0;
-                    continue;
-                }
-
-                DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(directory));
-                for (Path path : stream) {
-                    BufferedImage compare_image = ImageIO.read(new File(path.toString()));
-                    double similarity = image_similarity(base_image, compare_image);
-
-                    if (similarity > 0.8){
-                        String regex = "([a-zA-Z]+)_?(\\d)?.png";
-                        Matcher m = Pattern.compile(regex).matcher(path.getFileName().toString());
-
-                        if (!m.find())
-                            continue;
-
-                        String item = m.group(1);
-                        inventory[row-1][col-1] = item;
-                        if (m.group(2) != null){
-                            inventory_stack[row-1][col-1] = Integer.parseInt(m.group(2));
-                        }else {
-                            inventory_stack[row-1][col-1] = 1;
-                        }
-
-                        if (buff_durations.containsKey(item) && !rebuff_timers.containsKey(item)){
-                            LocalDateTime dateTime = LocalDateTime.now();
-                            rebuff_timers.put(item, dateTime);
-                        }
-
-                        break;
-                    }
-                }
+                update_inventory_slot(base_image, row, col);
             }
         }
     }
@@ -199,5 +219,29 @@ public class Player {
                 }
             }
         }
+    }
+
+    Point get_empty_slot(){
+        for (int row = 1; row <= 7; row++) {
+            for (int col = 1; col <= 4; col++) {
+                if (inventory[row-1][col-1].equals("Empty")){
+                    return new Point(row, col);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    Point get_alch_slot(){
+        for (int row = 1; row <= 7; row++) {
+            for (int col = 1; col <= 4; col++) {
+                if (inventory[row-1][col-1].equals("Alch")){
+                    return new Point(row, col);
+                }
+            }
+        }
+
+        return null;
     }
 }

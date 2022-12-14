@@ -12,7 +12,6 @@ import java.awt.*;
 public class CoordinateParser implements NativeMouseInputListener, NativeKeyListener {
     public void nativeMouseClicked(NativeMouseEvent e) {
 //        System.out.println("Mouse Cicked: " + e.getButton());
-
     }
 
     public void nativeMousePressed(NativeMouseEvent e) {
@@ -48,7 +47,7 @@ public class CoordinateParser implements NativeMouseInputListener, NativeKeyList
     }
 
     public void nativeKeyPressed(NativeKeyEvent e){
-//        System.out.println(e.getKeyCode());
+        System.out.println(e.getKeyCode());
 
         if (e.getKeyCode() == 1){
             System.exit(0);

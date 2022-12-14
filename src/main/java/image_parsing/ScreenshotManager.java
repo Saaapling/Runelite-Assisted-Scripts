@@ -137,10 +137,14 @@ public class ScreenshotManager {
         ImageIO.write(sub_image, "PNG", new File(path));
     }
 
-    public static void screenshot_inventory_item(String path, int row, int col) throws IOException, AWTException {
+    public static void screenshot_inventory_item(int row, int col, String file_name) throws IOException, AWTException {
         Point item_center = Offsets.get_inventory_coordinate(row, col);
-        String file_name = path + row + "_" + col + ".png";
         take_screenshot(item_center.subtract(new Point(inventory_item_size, inventory_item_size)), inventory_item_size * 2, inventory_item_size * 2, file_name);
+    }
+
+    public static void screenshot_inventory_item(String path, int row, int col) throws IOException, AWTException {
+        String file_name = path + row + "_" + col + ".png";
+        screenshot_inventory_item(row, col, file_name);
     }
 
     public static void screenshot_inventory_items(String path) throws IOException, AWTException {

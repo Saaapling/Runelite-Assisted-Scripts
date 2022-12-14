@@ -85,7 +85,7 @@ public class Client{
         set_window(User32.SW_SHOWMINIMIZED);
     }
 
-    public int[] update_status() throws IOException {
+    public void update_status() throws IOException {
         boolean minimize = false;
         WinDef.RECT rect = new WinDef.RECT();
         Controller.user32.GetWindowRect(hWnd, rect);
@@ -102,12 +102,14 @@ public class Client{
 
         if (minimize)
             set_window(User32.SW_SHOWMINIMIZED);
-
-        return status;
     }
 
     public void update_inventory() throws IOException {
         player.update_inventory(ImageParser.get_inventory());
+    }
+
+    public void update_inventory_slot(int row, int col) throws IOException{
+        player.update_inventory_slot(ImageParser.get_inventory_slot(row, col), row, col);
     }
 
     public int get_health(){
@@ -141,12 +143,20 @@ public class Client{
     public Point check_consumes(){
         return player.check_consumes();
     }
+
+    public Point check_alchemy() { return player.get_alch_slot(); }
+
     public boolean check_availability(){
         return player.check_empty();
     }
 
-    public void loot_item(){
-        player.fill_empty_slot();
+    public void loot_item() {
+        Point inven_slot = player.get_empty_slot();
+        try {
+            update_inventory_slot((int) inven_slot.getX(), (int) inven_slot.getY());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // For testing purposes

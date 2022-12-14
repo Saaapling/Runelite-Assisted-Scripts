@@ -1,5 +1,6 @@
 package base;
 
+import actions.Point;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
@@ -7,6 +8,7 @@ import com.sun.jna.platform.DesktopWindow;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
+import image_parsing.ImageParser;
 import image_parsing.Offsets;
 import tasks.AFKCombatHelper.AFKCombatLooter;
 import tasks.AFKCombatHelper.AFKCombatManager;
@@ -104,15 +106,10 @@ public class Controller implements NativeKeyListener {
 
         Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
         ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
-//        start_clients(AFKKrackenHelper.class, parameter_class, parameters);
-//        start_clients(AFKCombatLooter.class, parameter_class, parameters);
-        start_clients(AFKCombatManager.class, parameter_class, parameters);
-//        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
-//        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
-//        start_clients(BlastFurnaceSme``lter.class, parameter_class, parameters);
-//        start_clients(BlastFurnaceMithril.class, parameter_class, parameters);
 
-//        start_clients(RedSalamanderHunter.class, parameter_class, parameters);
+//        start_clients(BlastFurnaceSmelter.class, parameter_class, parameters);
+//        start_clients(BlastFurnaceMithril.class, parameter_class, parameters);
+        start_clients(RedSalamanderHunter.class, parameter_class, parameters);
 //        start_clients(AutoClicker.class, parameter_class, parameters);
     }
 
