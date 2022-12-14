@@ -54,7 +54,7 @@ public class AFKCombatManager extends AFKCombatLooter{
                     return null;
                 }
             }
-            if (client.get_prayer() < 30){
+            if (client.get_prayer() < 10){
                 Point prayer_item = client.get_prayer_slot();
                 if (prayer_item != null){
                     // Consume Prayer Potion

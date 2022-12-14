@@ -11,6 +11,7 @@ import image_parsing.Offsets;
 import tasks.AFKCombatHelper.AFKCombatLooter;
 import tasks.AFKCombatHelper.AFKCombatManager;
 import tasks.AFKCombatHelper.AFKKrackenHelper;
+import tasks.AutoClicker.AutoClicker;
 import tasks.BlastFurnace.BlastFurnaceMithril;
 import tasks.BlastFurnace.BlastFurnaceSmelter;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
@@ -49,22 +50,6 @@ public class Controller implements NativeKeyListener {
 
         for (Client x: clients.values()){
             Utils.print(x.get_dimensions());
-        }
-    }
-
-    public static void get_health_test() throws IOException, InterruptedException {
-        for (int j = 0; j < 60; j++){
-            int i = 0;
-            for (Client client : clients.values()){
-                int[] status = client.update_status();
-                Utils.print("base.Client " + i + ": ");
-                Utils.print("Health: " + status[0]);
-                Utils.print("Prayer: " + status[1]);
-                Utils.print("Stamina: " + status[2]);
-                i += 1;
-            }
-
-            Thread.sleep(5000);
         }
     }
 
@@ -121,15 +106,14 @@ public class Controller implements NativeKeyListener {
         ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
 //        start_clients(AFKKrackenHelper.class, parameter_class, parameters);
 //        start_clients(AFKCombatLooter.class, parameter_class, parameters);
-//        start_clients(AFKCombatManager.class, parameter_class, parameters);
-
+        start_clients(AFKCombatManager.class, parameter_class, parameters);
 //        Class<?>[] parameter_class = {Client.class, InputController.class, ReentrantLock.class};
 //        ArrayList<Object> parameters = new ArrayList<>(Arrays.asList(mouse, lock));
-//        start_clients(BlastFurnaceSmelter.class, parameter_class, parameters);
+//        start_clients(BlastFurnaceSme``lter.class, parameter_class, parameters);
 //        start_clients(BlastFurnaceMithril.class, parameter_class, parameters);
 
-        start_clients(RedSalamanderHunter.class, parameter_class, parameters);
-
+//        start_clients(RedSalamanderHunter.class, parameter_class, parameters);
+//        start_clients(AutoClicker.class, parameter_class, parameters);
     }
 
     // Customize this method to set the task(s) as needed

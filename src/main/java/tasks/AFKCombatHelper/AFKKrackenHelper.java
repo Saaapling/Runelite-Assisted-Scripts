@@ -20,7 +20,7 @@ public class AFKKrackenHelper extends AFKCombatLooter{
         super(client, mouse, lock);
         client.update_inventory();
 
-        actions.put("Attack Kraken", new MouseLeftClickAction(mouse, new Point(940, 405), 50, 10000, "Attack Kraken"));
+        actions.put("Attack Kraken", new MouseLeftClickAction(mouse, new Point(940, 395), 20, 10000, "Attack Kraken"));
     }
 
     private boolean check_water(Color target){

@@ -34,7 +34,7 @@ public class RedSalamanderHunter extends InteractionTask {
         actions.put("Move to Trap 2", new MouseLeftClickAction(mouse, new Point(716, 242), 8, 4300, "Move to Trap 2"));
         actions.put("Step to Trap 2", new MouseLeftClickAction(mouse, new Point(935, 465), 15, 1800, "Step to Trap 2"));
 
-        actions.put("Move to Trap 3", new MouseLeftClickAction(mouse, new Point(834, 481), 8, 3000, "Move to Trap 3"));
+        actions.put("Move to Trap 3", new MouseLeftClickAction(mouse, new Point(834, 479), 8, 3000, "Move to Trap 3"));
         actions.put("Step to Trap 3", new MouseLeftClickAction(mouse, new Point(880, 465), 15, 1800, "Step to Trap 3"));
 
         actions.put("Move to Trap 4", new MouseLeftClickAction(mouse, new Point(1106, 464), 8, 3500, "Move to Trap 4"));
@@ -44,13 +44,13 @@ public class RedSalamanderHunter extends InteractionTask {
         actions.put("Set Trap 1", new MouseLeftClickAction(mouse, new Point(950, 593), 7,3200, "Set Trap 1"));
         actions.put("Set Trap 2", new MouseLeftClickAction(mouse, new Point(995, 518), 7, 3200, "Set Trap 2"));
         actions.put("Set Trap 3", new MouseLeftClickAction(mouse, new Point(936, 580), 7, 3200, "Set Trap 3"));
-        actions.put("Set Trap 4", new MouseLeftClickAction(mouse, new Point(948, 460), 7, 20200, "Set Trap 4"));
+        actions.put("Set Trap 4", new MouseLeftClickAction(mouse, new Point(948, 460), 7, 12200, "Set Trap 4"));
 
         // Pick up Bounds
-        actions.put("Pick up Item 1", new MouseLeftClickAction(mouse, new Point(948, 530), 5, 500, "Pick up Item 1"));
-        actions.put("Pick up Item 2", new MouseLeftClickAction(mouse, new Point(946, 534), 5, 500, "Pick up Item 2"));
-        actions.put("Pick up Item 3", new MouseLeftClickAction(mouse, new Point(936, 532), 5, 500, "Pick up Item 3"));
-        actions.put("Pick up Item 4", new MouseLeftClickAction(mouse, new Point(936, 522), 5, 500, "Pick up Item 4"));
+        actions.put("Pick up Item 1", new MouseLeftClickAction(mouse, new Point(948, 530), 5, 300, "Pick up Item 1"));
+        actions.put("Pick up Item 2", new MouseLeftClickAction(mouse, new Point(946, 534), 5, 300, "Pick up Item 2"));
+        actions.put("Pick up Item 3", new MouseLeftClickAction(mouse, new Point(936, 532), 5, 300, "Pick up Item 3"));
+        actions.put("Pick up Item 4", new MouseLeftClickAction(mouse, new Point(936, 522), 5, 300, "Pick up Item 4"));
 
         // Evaluation Actions
         actions.put("Evaluate Action 1", new DefaultAction(500, "Evaluate Action 1"));
@@ -90,36 +90,49 @@ public class RedSalamanderHunter extends InteractionTask {
         if (next_action == null)
             return null;
 
+        boolean found = false;
+        int target_row = 0;
+        int target_col = 0;
+        try {
+            String base_path = ".\\src\\main\\java\\tasks\\RedSalamanderHunter\\InventoryImages\\";
+            for (int row = 1; row <= 7; row++) {
+                for (int col = 1; col <= 4; col++) {
+                    BufferedImage base_inventory_slot = ImageIO.read(new File(base_path + "Red_Salamander.png"));
+                    BufferedImage inventory_slot = get_inventory_image(row, col);
+
+                    if (image_similarity(base_inventory_slot, inventory_slot) > 0.95) {
+                        failsafe_counter = 0;
+                        target_row = row;
+                        target_col = col;
+                        found = true;
+                    }
+                }
+            }
+        } catch(IOException e){
+            return null;
+        }
+
         String action_name = next_action.get_name();
         if (action_name.startsWith("Evaluate Action")) {
             action_queue.addLast(next_action);
             char trap_num = action_name.charAt(action_name.length() - 1);
-            try {
-                String base_path = ".\\src\\main\\java\\tasks\\RedSalamanderHunter\\InventoryImages\\";
-                for (int row = 1; row <= 7; row++) {
-                    for (int col = 1; col <= 4; col++) {
-                        BufferedImage base_inventory_slot = ImageIO.read(new File(base_path + "Red_Salamander.png"));
-                        BufferedImage inventory_slot = get_inventory_image(row, col);
-
-                        if (image_similarity(base_inventory_slot, inventory_slot) > 0.95) {
-                            failsafe_counter = 0;
-                            action_queue.addFirst(actions.get("Step to Trap " + trap_num));
-                            return new InventoryAction(mouse, row, col, 500, true, "Drop Salamander");
-                        }
-                    }
-                }
+            if (found){
+                action_queue.addFirst(actions.get("Step to Trap " + trap_num));
+                return new InventoryAction(mouse, target_row, target_col, 500, true, "Drop Salamander");
+            }else {
                 failsafe_counter += 1;
+                action_queue.addFirst(actions.get("Pick up Item " + trap_num));
+                action_queue.addFirst(actions.get("Pick up Item " + trap_num));
                 return actions.get("Pick up Item " + trap_num);
-
-            } catch(IOException e){
-                return null;
             }
+        }else if (found){
+            action_queue.addFirst(next_action);
+            return new InventoryAction(mouse, target_row, target_col, 500, true, "Drop Salamander");
         }
 
         if (action_name.startsWith("Set") || action_name.startsWith("Move") || action_name.startsWith("Reset")){
             action_queue.addLast(next_action);
         }
-
 
         return next_action;
     }
@@ -132,7 +145,7 @@ public class RedSalamanderHunter extends InteractionTask {
         try {
             focus_client();
             Action next_action = get_next_action();
-            while (failsafe_counter < 8){
+            while (failsafe_counter < 20){
                 System.out.println("Executing Action (" + client.get_name() + "): " + next_action.get_name());
                 next_action.execute();
 

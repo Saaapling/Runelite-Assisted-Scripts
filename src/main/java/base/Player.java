@@ -32,7 +32,7 @@ public class Player {
     static HashMap<String, Integer> buff_durations = new HashMap<>();
     static {
         buff_durations.put("SuperCombat", 10);
-        buff_durations.put("Ranging", 10);
+        buff_durations.put("Ranging", 6);
         buff_durations.put("Antifire", 12);
         buff_durations.put("SuperAntifire", 6);
         buff_durations.put("Antipoison", 6);
