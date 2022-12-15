@@ -66,9 +66,12 @@ public class Player {
         return counter / (data_a.getSize() / 3.d) > 0.99;
     }
 
+    // Todo: Consolidate directories - Each task requires a specific subset of items that need to be checked against
+    // Todo: These directories/images can be passed in as a custom path instead of checking them all
     void update_inventory_slot(BufferedImage base_image, int row, int col) throws IOException {
         String potion_directory = ".\\src\\main\\java\\base\\InventoryImages\\";
         String alchemy_directory = "./src/main/java/tasks/AFKCombatHelper/AlchemyTargets/";
+        String hunter_directory = "./src/main/java/tasks/ManiacleMonkeys/InventoryImages/";
 
         inventory[row-1][col-1] = "Item";
         inventory_stack[row-1][col-1] = 1;
@@ -117,6 +120,20 @@ public class Player {
 
             if (similarity > 0.8){
                 inventory[row-1][col-1] = "Alch";
+                inventory_stack[row-1][col-1] = 1;
+                return;
+            }
+        }
+
+        // Check for hunter items
+        stream = Files.newDirectoryStream(Paths.get(hunter_directory));
+        for (Path path : stream) {
+            BufferedImage compare_image = ImageIO.read(new File(path.toString()));
+            double similarity = image_similarity(base_image, compare_image);
+
+            if (similarity > 0.8){
+                String item_name = path.getFileName().toString();
+                inventory[row-1][col-1] = item_name.substring(0, item_name.length() - 4);
                 inventory_stack[row-1][col-1] = 1;
                 return;
             }
@@ -207,6 +224,18 @@ public class Player {
             }
         }
         return false;
+    }
+
+    int get_empty_slots(){
+        int empty = 0;
+        for (int row = 1; row <= 7; row++) {
+            for (int col = 1; col <= 4; col++) {
+                if (inventory[row-1][col-1].equals("Empty")){
+                    empty += 1;
+                }
+            }
+        }
+        return empty;
     }
 
     void fill_empty_slot(){

@@ -112,6 +112,8 @@ public class Client{
         player.update_inventory_slot(ImageParser.get_inventory_slot(row, col), row, col);
     }
 
+    public int get_empty_slots() { return player.get_empty_slots(); }
+
     public int get_health(){
         return player.health;
     }
