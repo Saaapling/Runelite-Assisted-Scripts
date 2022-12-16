@@ -33,9 +33,10 @@ public class AFKCombatHelper extends InteractionTask {
     public boolean get_combat_status() {
         combat_check_counter += 1;
         // Too many failed combat checks (Possibly finished slayer task and in a no-combat area)
-        if (combat_check_counter > 10){
-            failsafe_counter = Integer.MAX_VALUE;
-        }
+//        if (combat_check_counter > 25){
+//            System.out.println("Too many combat checks failed");
+//            failsafe_counter = Integer.MAX_VALUE;
+//        }
         Color target = get_color(Offsets.get_enemy_health_coordinate(client.get_dimensions()));
 
         // Rough Estimates for the RuneLite green health bar
