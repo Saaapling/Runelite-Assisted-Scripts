@@ -17,6 +17,7 @@ import tasks.AutoClicker.AutoClicker;
 import tasks.BlastFurnace.BlastFurnaceMithril;
 import tasks.BlastFurnace.BlastFurnaceSmelter;
 import tasks.EdgevilleCrafting.EdgevilleCrafting;
+import tasks.ManiacleMonkeys.ManiacleMonkeys;
 import tasks.RedSalamanderHunter.RedSalamanderHunter;
 import tasks.Task;
 
@@ -109,7 +110,9 @@ public class Controller implements NativeKeyListener {
 
 //        start_clients(BlastFurnaceSmelter.class, parameter_class, parameters);
 //        start_clients(BlastFurnaceMithril.class, parameter_class, parameters);
-        start_clients(RedSalamanderHunter.class, parameter_class, parameters);
+//        start_clients(RedSalamanderHunter.class, parameter_class, parameters);
+        start_clients(ManiacleMonkeys.class, parameter_class, parameters);
+
 //        start_clients(AutoClicker.class, parameter_class, parameters);
     }
 

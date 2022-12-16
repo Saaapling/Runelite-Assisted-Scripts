@@ -138,6 +138,8 @@ public class Client{
         return player.get_prayer_slot();
     }
 
+    public Point get_item_slot(String item) {return player.get_item_slot(item); }
+
     public void consume_item(int row, int col){
         player.consume_item(row, col);
     }

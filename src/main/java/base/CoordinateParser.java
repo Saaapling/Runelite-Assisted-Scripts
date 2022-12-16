@@ -28,9 +28,9 @@ public class CoordinateParser implements NativeMouseInputListener, NativeKeyList
             Color color = robot.getPixelColor(e.getX(), e.getY());
 
             // Print the RGB information of the pixel color
-//            System.out.println("Red   = " + color.getRed());
-//            System.out.println("Green = " + color.getGreen());
-//            System.out.println("Blue  = " + color.getBlue());
+            System.out.println("Red   = " + color.getRed());
+            System.out.println("Green = " + color.getGreen());
+            System.out.println("Blue  = " + color.getBlue());
         }
     }
 
@@ -47,7 +47,7 @@ public class CoordinateParser implements NativeMouseInputListener, NativeKeyList
     }
 
     public void nativeKeyPressed(NativeKeyEvent e){
-        System.out.println(e.getKeyCode());
+//        System.out.println(e.getKeyCode());
 
         if (e.getKeyCode() == 1){
             System.exit(0);
