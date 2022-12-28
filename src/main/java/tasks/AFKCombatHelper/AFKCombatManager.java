@@ -50,7 +50,7 @@ public class AFKCombatManager extends AFKCombatLooter{
         }
         if (alch_item != null){
             action_queue.addFirst(actions.get("Select Inventory Tab"));
-            action_queue.addFirst(new InventoryAction(mouse, (int) alch_item.getX(), (int) alch_item.getY(), 500, "Cast High Alchemy"));
+            action_queue.addFirst(new InventoryAction(mouse, (int) alch_item.getX(), (int) alch_item.getY(), 1500, "Cast High Alchemy"));
             action_queue.addFirst(actions.get("Select High Alchemy"));
             return actions.get("Select Magic Tab");
         }

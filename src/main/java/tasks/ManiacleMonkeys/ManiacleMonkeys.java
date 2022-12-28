@@ -21,6 +21,10 @@ public class ManiacleMonkeys extends InteractionTask {
 
     LocalDateTime bone_timer;
     LocalDateTime last_catch;
+    Point banana = new Point(870, 551);
+    int nana_r = -1;
+    int nana_g = -1;
+    int nana_b = -1;
 
     public ManiacleMonkeys(Client client, InputController mouse, ReentrantLock lock) {
         super(client, mouse, lock);
@@ -41,19 +45,27 @@ public class ManiacleMonkeys extends InteractionTask {
         actions.put("Move to Trap", new MouseLeftClickAction(mouse, new Point(1295, 635), 25, 2000, "Move to Trap"));
 
         // Set Trap
-        actions.put("Set Trap", new MouseLeftClickAction(mouse, new Point(810, 465), 50, 5000, "Set Trap"));
+        actions.put("Set Trap", new MouseLeftClickAction(mouse, new Point(860, 520), 25, 3000, "Set Trap"));
 
         // Reset Camera (600 zoom position)
         actions.put("Reset Camera", new KeyboardAction(mouse, "ctrl", "Reset Camera"));
     }
 
     private boolean check_trap(Color target){
-//        print(target.getRed());
-//        print(target.getGreen());
-//        print(target.getBlue());
-        if (target.getBlue() < target.getRed() - 75)
-            return target.getBlue() < target.getGreen() - 75;
-        return false;
+        print(target.getRed());
+        print(target.getGreen());
+        print(target.getBlue());
+        if (nana_r < 0){
+            nana_r = target.getRed();
+            nana_g = target.getGreen();
+            nana_b = target.getBlue();
+            return false;
+        }
+        if (target.getRed() == nana_r)
+            if (target.getGreen() == nana_g)
+                return target.getBlue() != nana_b;
+
+        return true;
     }
 
     /*
@@ -110,9 +122,10 @@ public class ManiacleMonkeys extends InteractionTask {
 
         // Check Trap (Super ghetto check, R,G values > B value + 75 is approximately yellow
         // Coordinate: 883, 541
-        if (!check_trap(ImageParser.get_color(new Point(883, 541)))){
-            action_queue.addFirst(actions.get("Set Trap"));
-            return new WaitAction(5000, "Trap Wait", "Trap state changed, waiting 5 seconds for animation");
+        if (!check_trap(ImageParser.get_color(banana))){
+//            action_queue.addFirst(actions.get("Set Trap"));
+//            return new WaitAction(2000, "Trap Wait", "Trap state changed, waiting 5 seconds for animation");
+            return actions.get("Set Trap");
         }
 
         return new WaitAction(1000, "Default Wait", client.get_name() + ": No available actions, waiting 1 second");
@@ -143,6 +156,7 @@ public class ManiacleMonkeys extends InteractionTask {
         }
 
         System.out.println("Task finished: " + client.get_name());
+        System.exit(0);
     }
 
     }

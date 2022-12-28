@@ -39,8 +39,8 @@ public class CombatTaskController extends Controller implements NativeMouseInput
 
         System.out.println(row + ", " + col);
 
-//        String path = "./src/main/java/tasks/AFKCombatHelper/AlchemyTargets/" + getRandString() + ".png";
-        String path = "./src/main/java/tasks/ManiacleMonkeys/InventoryImages/" + getRandString() + ".png";
+        String path = "./src/main/java/tasks/AFKCombatHelper/AlchemyTargets/" + getRandString() + ".png";
+//        String path = "./src/main/java/tasks/ManiacleMonkeys/InventoryImages/" + getRandString() + ".png";
         screenshot_inventory_item(row, col, path);
     }
 
